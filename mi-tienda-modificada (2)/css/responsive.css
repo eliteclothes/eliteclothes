@@ -1,0 +1,5 @@
+/* ADAPTACIÓN A CELULAR Y PANTALLA GRANDE */
+@media(min-width:750px){body{font-size:16px}.slide{padding:60px 8vw 70px}.benef{grid-template-columns:repeat(3,1fr);padding:60px 5vw}}
+@media(max-width:768px){.card{flex-basis:calc(50% - 6px)}.track{gap:12px}.card .nm{font-size:18px}.card .pr{font-size:18px}.sz span{min-width:28px;height:24px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media(min-width:990px){.pd{display:grid;grid-template-columns:1.25fr 1fr;gap:48px}.gal{margin:0}.otras{grid-template-columns:repeat(4,1fr)}}

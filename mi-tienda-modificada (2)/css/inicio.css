@@ -1,0 +1,61 @@
+/* INICIO: banners, carruseles, beneficios */
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.slides::-webkit-scrollbar{display:none}
+.slide{position:relative;flex:0 0 100%;scroll-snap-align:start;height:min(120vw,82vh);display:grid;align-content:end;justify-items:start;padding:44px 26px 54px;text-align:left;color:#fff;background:#3a3a3f center/cover}
+.slide::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,#000d 0%,#0004 45%,transparent 75%)}
+.slide>*{position:relative;max-width:620px}
+.slide h2{font:500 clamp(42px,8vw,84px)/.98 var(--titulos);margin:0 0 10px}
+.slide p{margin:0 0 22px;font:italic 500 clamp(18px,3vw,26px)/1.2 var(--titulos);color:#f1e3c8}
+.btn{display:inline-block;background:transparent;color:#fff;border:1px solid #fff;padding:12px 30px;border-radius:99px;font-weight:500;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;text-align:center;transition:transform .25s,background .25s,color .25s}
+.btn:hover{background:#fff;color:var(--tinta);transform:translateY(-2px)}
+.sctl{display:flex;justify-content:center;align-items:center;gap:6px;background:var(--fondo);color:#fff;padding:2px}
+.sctl button{background:none;border:0;font-size:22px;min-width:40px;min-height:40px}
+#bPausa{font-size:10px}
+.dots{display:flex;gap:4px}.dots button{width:22px;height:2px;min-width:0;min-height:0;padding:0;margin:20px 4px;border:0;background:#fff5}
+.dots .on{background:var(--acento)}
+.edit{text-align:center;padding:56px 20px 44px;background:var(--claro)}
+.eyebrow{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--acento)}
+.eyebrow i{width:5px;height:5px;transform:rotate(45deg);background:var(--acento)}
+.edit h2{max-width:760px;margin:0 auto;font:500 clamp(36px,6vw,58px)/1.02 var(--titulos)}
+.edit h2 span{font-style:italic;font-weight:500;color:var(--acento)}
+.prog{position:relative;width:min(220px,60vw);height:1px;margin:30px auto 0;background:var(--linea);overflow:hidden}
+.prog span{position:absolute;top:0;left:-70px;width:70px;height:1px;background:var(--acento);animation:corre 4s ease-in-out infinite}
+@keyframes corre{0%{left:-70px}55%,100%{left:100%}}
+
+/* Secciones de productos: encabezado a dos columnas y fondos alternos */
+.sec{padding:48px 16px 54px;background:var(--claro)}
+.sec:nth-child(even){background:var(--arena)}
+.sec-in{max-width:1180px;margin:auto;display:grid;grid-template-columns:1fr auto;align-items:end;column-gap:20px}
+.sec-in>*{grid-column:1/-1}
+.sec h2{grid-column:1;margin:0;font:500 clamp(38px,6vw,56px)/1 var(--titulos)}
+.vt{grid-column:2;margin:0 0 6px;padding:7px 18px;border:1px solid var(--tinta);border-radius:99px;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;text-decoration:none;transition:background .25s,color .25s}
+.vt:hover{background:var(--tinta);color:var(--claro)}
+.sec>.sec-in>p{max-width:640px;margin:12px 0 28px;color:var(--suave)}
+.filtro{min-height:20px;font-size:14px;margin-bottom:10px}
+.filtro button{border:0;background:none;text-decoration:underline}
+.track{display:flex;gap:20px;overflow-x:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;touch-action:pan-y}
+.card{flex:0 0 calc(25% - 15px);scroll-snap-align:start;text-decoration:none;min-width:0}
+.im{aspect-ratio:1/1;width:100%;background-color:#e4dccd;background-size:cover;background-position:center;background-repeat:no-repeat;margin-bottom:14px;border-radius:8px;transition:transform .4s}
+.card:hover .im{transform:translateY(-4px)}
+.cat{font-size:11px;letter-spacing:2px;color:var(--acento);text-transform:uppercase;margin-bottom:4px}
+.nm{font:500 22px/1.15 var(--titulos);margin-bottom:6px}
+.sz{display:flex;flex-wrap:wrap;gap:6px}
+.sz span,.sz button{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 9px;background:transparent;border:1px solid var(--linea);border-radius:4px;font-size:12px}
+.sz .ago{color:#aaa;text-decoration:line-through;opacity:.6}
+.sz button.sel{background:var(--fondo);border-color:var(--fondo);color:#fff}
+.mk{margin-top:10px;font-size:11px;letter-spacing:1.8px;color:var(--suave);text-transform:uppercase}
+.ctl{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:28px;color:var(--suave)}
+.ctl button{background:none;border:1px solid var(--linea);border-radius:50%;width:40px;height:40px;font-size:22px;line-height:1;color:var(--tinta);padding:0}
+.ctl button:hover{background:var(--tinta);color:var(--claro)}
+
+/* Beneficios: tres tarjetas redondeadas */
+.benef{display:grid;gap:14px;padding:46px 16px;background:var(--claro);text-align:center}
+.benef .g{display:contents}
+.benef .it{padding:30px 22px;border:1px solid var(--linea);border-radius:22px;background:#fbf8f3}
+.benef .it svg{width:34px;height:34px;margin-bottom:12px;fill:none;stroke:var(--acento);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.benef b{display:block;font:500 24px var(--titulos);margin-bottom:6px}
+.benef p{margin:0 auto;max-width:260px;color:var(--suave)}
+.btn{transition:transform .25s,background .25s,color .25s}
+
+/* Sección "Próximamente" */
+.sec>.sec-in>p.prox,.cp>p.prox{margin:22px 0 0;padding:64px 20px;border:1px dashed var(--acento);border-radius:22px;text-align:center;font:italic 500 clamp(30px,5vw,48px)/1 var(--titulos);color:var(--acento)}

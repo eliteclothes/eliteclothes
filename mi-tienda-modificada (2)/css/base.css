@@ -1,0 +1,21 @@
+/* VARIABLES DE COLOR Y FUENTES (aquí cambias el estilo de toda la página) y estilos generales */
+/* Para cambiar colores y fuentes edita SOLO el bloque :root */
+:root{
+  --fondo:#1a1612;      /* EDITA AQUÍ: color oscuro principal (pie, botones, detalles) */
+  --encabezado:#000000; /* EDITA AQUÍ: barra superior (debe combinar con el fondo negro de tu logo) */
+  --encabezado-texto:#f4efe7;
+  --claro:#f4efe7;      /* fondo general (crema) */
+  --arena:#ebe3d5;      /* fondo de secciones alternas */
+  --linea:#d9cebb;      /* líneas y bordes suaves */
+  --tinta:#1a1612;      /* texto principal */
+  --suave:#7a6f60;      /* texto secundario */
+  --acento:#a8803f;     /* EDITA AQUÍ: dorado de detalles (precios, enlaces, líneas) */
+  --titulos:"Cormorant Garamond",Georgia,serif;  /* EDITA AQUÍ: fuente de títulos */
+  --cuerpo:Jost,system-ui,sans-serif;            /* EDITA AQUÍ: fuente de textos */
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;font:400 15px/1.6 var(--cuerpo);background:var(--claro);color:var(--tinta)}
+button{font:inherit;cursor:pointer;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--acento);outline-offset:2px}
