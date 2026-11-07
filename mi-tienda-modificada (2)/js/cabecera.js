@@ -3,7 +3,7 @@
 $("#logo").innerHTML = TIENDA.logo ? `<img src="${TIENDA.logo}" alt="${TIENDA.nombre}">` : TIENDA.nombre;
 $("#titulo").innerHTML = `${TIENDA.lema1}<br><span>${TIENDA.lema2}</span>`;
 $("#wa").href = `https://wa.me/${TIENDA.whatsapp}`;
-$("#benef").innerHTML = `<div class="it f">${ICO.caja}<b>Envíos a todo el país</b><p>${TIENDA.envios}</p></div>
+$("#benef").innerHTML = `<div class="it f">${ICO.caja}<b>Envíos a todo el país</b><p>${TIENDA.envios}${TIENDA.envioGratis ? ` <b class="gr">Envío gratis en compras desde ${cop(TIENDA.envioGratis)}.</b>` : ""}</p></div>
   <div class="g"><div class="it">${ICO.chat}<b>Asesoría directa</b><p>Resolvemos tus dudas por WhatsApp.</p></div>
   <div class="it">${ICO.lock}<b>Compra tranquila</b><p>Pagos protegidos y atención cercana.</p></div></div>`;
 $("#negro").innerHTML = `<h2>${TIENDA.nombre}</h2><div class="es">${TIENDA.eslogan}</div>

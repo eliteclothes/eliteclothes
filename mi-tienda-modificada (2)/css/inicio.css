@@ -54,7 +54,7 @@
 .benef .it{padding:30px 22px;border:1px solid var(--linea);border-radius:22px;background:#fbf8f3}
 .benef .it svg{width:34px;height:34px;margin-bottom:12px;fill:none;stroke:var(--acento);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .benef b{display:block;font:500 24px var(--titulos);margin-bottom:6px}
-.benef p{margin:0 auto;max-width:260px;color:var(--suave)}
+.benef p{margin:0 auto;max-width:260px;color:var(--suave)}.benef p .gr{display:block;margin:8px 0 0;font:500 15px var(--cuerpo);color:var(--tinta)}
 .btn{transition:transform .25s,background .25s,color .25s}
 
 /* Sección "Próximamente" */

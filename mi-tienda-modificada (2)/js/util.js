@@ -1,5 +1,9 @@
 /* UTILIDADES y estado general (no editar) */
 const $ = (s, r = document) => r.querySelector(s);
+// Enlace completo (https://...) de una imagen; las de muestra (data:) no se envían
+const urlImg = s => { try { return !s || s.startsWith("data:") ? "" : new URL(s, location.href).href; } catch (e) { return ""; } };
+// Enlace a la página del producto
+const urlProducto = (g, i) => location.origin + location.pathname + `#/p/${g}/${i}`;
 const cop = n => "$" + Number(n).toLocaleString("es-CO");
 const muestra = (t, i) => "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><rect width='800' height='800' fill='${["#e6e6e6","#dcdcdc","#d2d2d2"][i % 3]}'/><text x='400' y='410' fill='#888' font-size='34' text-anchor='middle' font-family='sans-serif'>${t}</text></svg>`);

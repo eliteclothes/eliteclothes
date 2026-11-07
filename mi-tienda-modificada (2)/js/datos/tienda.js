@@ -14,9 +14,9 @@ const TIENDA = {
   whatsapp: "573122469998",               // tu número con indicativo, sin + ni espacios
   instagram: "https://www.instagram.com/elite_clothes2/",
   tiktok: "https://www.tiktok.com/@elite.clothes7",
-  envios: "Hacemos envíos a todo Colombia.",
+  envios: "Hacemos envíos a todo Colombia.",   // el aviso de envío gratis se agrega solo con "envioGratis"
   // ---- Página de producto ----
-  envioGratis: 300000,                    // compras desde este valor tienen envío gratis (0 = ocultar aviso)
+  envioGratis: 500000,                    // compras desde este valor tienen envío gratis (0 = ocultar aviso)
   retiro: "Tu tienda física",             // lugar de retiro ("" = ocultar)
   pagos: ["visa", "mastercard", "pse", "contraentrega"], // medios que SÍ aceptas. Disponibles: visa, mastercard, pse, nequi, contraentrega
                                           // o la ruta de tu propio logo: "img/pagos/daviplata.png"
