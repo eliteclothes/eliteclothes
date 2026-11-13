@@ -13,9 +13,12 @@
 <link rel="stylesheet" href="css/producto.css">
 <link rel="stylesheet" href="css/pie.css">
 <link rel="stylesheet" href="css/carrito.css">
+<link rel="stylesheet" href="css/legal.css">
+<link rel="stylesheet" href="css/extras.css">
 <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
+<div id="anuncios" class="anuncios" role="region" aria-label="Anuncios de la tienda"></div>
 <header class="top" id="top">
   <button id="btnMenu" class="ic" aria-label="Menú"><svg viewBox="0 0 18 16" width="20"><path fill="currentColor" d="M1 .5a.5.5 0 1 0 0 1h15.7a.5.5 0 0 0 0-1zM.5 8a.5.5 0 0 1 .5-.5h15.7a.5.5 0 0 1 0 1H1A.5.5 0 0 1 .5 8m0 7a.5.5 0 0 1 .5-.5h15.7a.5.5 0 0 1 0 1H1a.5.5 0 0 1-.5-.5"/></svg></button>
   <a href="#inicio" class="logo" id="logo"></a>
@@ -45,6 +48,7 @@
   </div>
   <section id="producto" hidden></section>
   <section id="catalogo" hidden></section>
+  <section id="legal" hidden></section>
 </main>
 
 <footer>
@@ -56,8 +60,9 @@
 <aside id="carrito" class="drawer der" aria-hidden="true">
   <h2>Tu carrito</h2><div id="items"></div>
   <div class="tot"><span>Total</span><b id="total">$0</b></div>
-  <p id="envnota" class="envnota"></p>
+  <div class="pgs mini" id="pagosCarrito"></div>
   <a id="pedir" class="btn" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+  <p class="ley">Al pedir aceptas los <a href="#/l/terminos">Términos</a> y la <a href="#/l/privacidad">Política de privacidad</a>.</p>
 </aside>
 <script src="js/datos/config.js"></script>
 <script src="js/datos/tienda.js"></script>
@@ -69,6 +74,8 @@
 <script src="js/datos/kids.js"></script>
 <script src="js/datos/resenas.js"></script>
 <script src="js/datos/pagos.js"></script>
+<script src="js/datos/legal.js"></script>
+<script src="js/datos/anuncios.js"></script>
 <script src="js/cargar.js"></script>
 </body>
 </html>

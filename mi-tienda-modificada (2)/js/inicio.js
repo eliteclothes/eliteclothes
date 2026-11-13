@@ -1,6 +1,6 @@
 /* PÁGINA DE INICIO: banners y carruseles de cada sección */
 // ---------- Banners ----------
-$("#slides").innerHTML = BANNERS.map((b, i) => `<div class="slide ${i ? "m" : "b"}" style="${b.img ? `background-image:url('${b.img}')` : ""}"><h2>${b.titulo}</h2><p>${b.texto}</p><a class="btn" href="${b.href}">${b.boton}</a></div>`).join("");
+$("#slides").innerHTML = BANNERS.map((b, i) => `<div class="slide ${i ? "m" : "b"}" ><div class="fondo" style="${b.img ? `background-image:url('${b.img}')` : ""}"></div><div class="cap"><h2>${b.titulo}</h2><p>${b.texto}</p><a class="btn" href="${b.href}">${b.boton}</a></div></div>`).join("");
 $("#dots").innerHTML = BANNERS.map((_, i) => `<button aria-label="Banner ${i + 1}"></button>`).join("");
 const sl = $("#slides"), pts = [...$("#dots").children];
 let pausa = false;

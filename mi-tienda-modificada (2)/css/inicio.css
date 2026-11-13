@@ -1,11 +1,13 @@
 /* INICIO: banners, carruseles, beneficios */
 .slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .slides::-webkit-scrollbar{display:none}
-.slide{position:relative;flex:0 0 100%;scroll-snap-align:start;height:min(120vw,82vh);display:grid;align-content:end;justify-items:start;padding:44px 26px 54px;text-align:left;color:#fff;background:#3a3a3f center/cover}
-.slide::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,#000d 0%,#0004 45%,transparent 75%)}
-.slide>*{position:relative;max-width:620px}
-.slide h2{font:500 clamp(42px,8vw,84px)/.98 var(--titulos);margin:0 0 10px}
-.slide p{margin:0 0 22px;font:italic 500 clamp(18px,3vw,26px)/1.2 var(--titulos);color:#f1e3c8}
+.slide{position:relative;overflow:hidden;flex:0 0 100%;scroll-snap-align:start;height:min(120vw,82vh);display:grid;align-content:end;justify-items:start;padding:44px 26px 54px;text-align:left;color:#fff;background:#3a3a3f center/cover}
+/* Texto del banner: todo blanco, con sombra suave SOLO en las letras (la foto no se oscurece) */
+.cap{position:relative;z-index:1;max-width:640px;color:#fff}
+.cap h2{margin:0 0 8px;font:600 clamp(40px,7vw,78px)/1 var(--titulos);color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.5),0 4px 30px rgba(0,0,0,.6)}
+.cap p{margin:0 0 24px;font:italic 600 clamp(19px,2.8vw,27px)/1.25 var(--titulos);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 3px 20px rgba(0,0,0,.6)}
+.cap .btn{color:#fff;border-color:#fff;background:transparent;box-shadow:0 2px 16px rgba(0,0,0,.35)}
+.cap .btn:hover{background:#fff;color:var(--tinta)}
 .btn{display:inline-block;background:transparent;color:#fff;border:1px solid #fff;padding:12px 30px;border-radius:99px;font-weight:500;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;text-align:center;transition:transform .25s,background .25s,color .25s}
 .btn:hover{background:#fff;color:var(--tinta);transform:translateY(-2px)}
 .sctl{display:flex;justify-content:center;align-items:center;gap:6px;background:var(--fondo);color:#fff;padding:2px}
@@ -54,8 +56,13 @@
 .benef .it{padding:30px 22px;border:1px solid var(--linea);border-radius:22px;background:#fbf8f3}
 .benef .it svg{width:34px;height:34px;margin-bottom:12px;fill:none;stroke:var(--acento);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .benef b{display:block;font:500 24px var(--titulos);margin-bottom:6px}
-.benef p{margin:0 auto;max-width:260px;color:var(--suave)}.benef p .gr{display:block;margin:8px 0 0;font:500 15px var(--cuerpo);color:var(--tinta)}
+.benef p{margin:0 auto;max-width:260px;color:var(--suave)}
 .btn{transition:transform .25s,background .25s,color .25s}
 
 /* Sección "Próximamente" */
 .sec>.sec-in>p.prox,.cp>p.prox{margin:22px 0 0;padding:64px 20px;border:1px dashed var(--acento);border-radius:22px;text-align:center;font:italic 500 clamp(30px,5vw,48px)/1 var(--titulos);color:var(--acento)}
+
+/* Movimiento lento de la foto del banner (zoom suave que va y viene). Para cambiar la velocidad, edita los 14s */
+.fondo{position:absolute;inset:0;background:center/cover;animation:ambiente 5s ease-in-out infinite alternate;will-change:transform}
+@keyframes ambiente{from{transform:scale(1.18) translate3d(-1.5%,0,0)}to{transform:scale(1) translate3d(0,0,0)}}
+@media(prefers-reduced-motion:reduce){.fondo{animation:none}}

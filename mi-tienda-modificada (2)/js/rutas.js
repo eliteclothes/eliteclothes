@@ -8,17 +8,23 @@ function cardH(g, i, p, precio) {
 // ---------- Navegación: inicio / categoría (#/c/grupo/categoría) / producto (#/p/grupo/número) ----------
 const enInicio = () => !$("#home").hidden;
 function irHome() { history.pushState(null, "", location.pathname + location.search); ruta(); }
+let _rutaLista = false;
 function ruta() {
-  const h = location.hash, p = h.match(/^#\/p\/(\w+)\/(\d+)$/), c = h.match(/^#\/c\/(\w+)(?:\/(.+))?$/);
+  if (_rutaLista && typeof cargando === "function") cargando(850); // logo girando al cambiar de apartado
+  _rutaLista = true;
+  const h = location.hash, p = h.match(/^#\/p\/(\w+)\/(\d+)$/), c = h.match(/^#\/c\/(\w+)(?:\/(.+))?$/), l = h.match(/^#\/l\/(\w+)$/);
   const okP = p && SECCIONES[p[1]] && PRODUCTOS[p[1]] && !SECCIONES[p[1]].proximamente && PRODUCTOS[p[1]][+p[2]], okC = !okP && c && SECCIONES[c[1]] && PRODUCTOS[c[1]];
-  $("#home").hidden = !!(okP || okC); $("#producto").hidden = !okP; $("#catalogo").hidden = !okC;
-  if (okP) verProducto(p[1], +p[2]); else if (okC) verCatalogo(c[1], c[2] ? decodeURIComponent(c[2]) : "");
-  if (okP || okC) scrollTo(0, 0);
+  const okL = !okP && !okC && l && LEGAL_PAGINAS[l[1]];
+  $("#home").hidden = !!(okP || okC || okL); $("#producto").hidden = !okP; $("#catalogo").hidden = !okC; $("#legal").hidden = !okL;
+  if (okP) verProducto(p[1], +p[2]); else if (okC) verCatalogo(c[1], c[2] ? decodeURIComponent(c[2]) : ""); else if (okL) verLegal(l[1]);
+  if (!okL) document.title = TIENDA.nombre;
+  if (okP || okC || okL) scrollTo(0, 0);
 }
 addEventListener("hashchange", ruta);
 document.addEventListener("click", e => {
   const a = e.target.closest('a[href^="#"]'), h = a && a.getAttribute("href");
-  if (!h || h === "#" || h.startsWith("#/")) return;
+  if (!h || h === "#") return;
+  if (h.startsWith("#/")) { cerrar(); return; }
   e.preventDefault(); cerrar();
   const [g, f] = h.slice(1).split("/");
   if (SECCIONES[g]) { location.hash = "#/c/" + g + (f ? "/" + encodeURIComponent(decodeURIComponent(f)) : ""); return; }
