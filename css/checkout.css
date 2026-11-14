@@ -1,0 +1,27 @@
+/* FINALIZAR COMPRA (ventana emergente) */
+.co{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;padding:18px;overflow:auto}
+.co[hidden]{display:none}
+.co-box{position:relative;width:100%;max-width:640px;margin:auto;background:var(--claro);border-radius:14px;padding:28px 26px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.co-box h2{margin:0 0 14px;font:500 32px var(--titulos)}
+.co-x{position:absolute;top:12px;right:14px;border:0;background:none;font-size:20px;cursor:pointer;color:var(--tinta)}
+.co-res{margin:0 0 18px;border-top:1px solid #0002}
+.co-res div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #0001;font-size:14px}
+.co-res small{color:var(--suave)}
+.co-form{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.co-form .ancho{grid-column:1/-1}
+.co-form label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--suave)}
+.co-form input:not([type=checkbox]),.co-form select{padding:12px 13px;border:1px solid #0003;border-radius:8px;background:#fff;font:inherit;font-size:15px;color:var(--tinta)}
+.co-form input:focus,.co-form select:focus{outline:2px solid var(--acento);outline-offset:0}
+.co-tot{border-top:1px solid #0002;padding-top:10px}
+.co-tot div{display:flex;justify-content:space-between;padding:4px 0;font-size:15px}
+.co-tot .gr{font:500 24px var(--titulos);padding-top:8px}
+.co-form .co-chk{flex-direction:row;align-items:flex-start;gap:9px;font-size:13px;line-height:1.4;cursor:pointer}
+.co-chk input{margin-top:3px}
+.co-chk a{color:var(--tinta);text-decoration:underline}
+.co-err{margin:0;min-height:18px;color:#b3261e;font-size:14px}
+.co-err:empty{display:none}
+.co-ok{margin:0 0 10px;color:var(--suave)}
+.co-bold{display:flex;justify-content:center;margin:16px 0 8px;min-height:60px}
+.co-peq{font-size:12px;color:var(--suave);text-align:center;margin:8px 0 0}
+#coIr{max-width:none;margin:4px 0 0}#coIr:disabled{opacity:.6;cursor:wait}
+@media(max-width:560px){.co{padding:10px}.co-box{padding:24px 18px 20px}.co-box h2{font-size:27px}.co-form{grid-template-columns:1fr}}

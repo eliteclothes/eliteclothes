@@ -1,2 +1,4 @@
+# Netlify: publica la carpeta raíz tal cual y activa las funciones del servidor (pagos con Bold)
 [build]
-  publish = "mi-tienda-modificada (2)"
+  publish = "."
+  functions = "netlify/functions"

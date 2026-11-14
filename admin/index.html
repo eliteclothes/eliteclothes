@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de administración</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<section id="login" class="login" hidden>
+  <form id="fLogin" class="caja">
+    <h1>Panel de la tienda</h1><p>Entra para administrar tus productos.</p>
+    <label>Correo<input id="lMail" type="email" required autocomplete="username"></label>
+    <label>Contraseña<input id="lPass" type="password" required autocomplete="current-password"></label>
+    <button class="b n" type="submit">Entrar</button><p id="lErr" class="err"></p>
+  </form>
+</section>
+
+<section id="app" hidden>
+  <header class="bar"><b>Panel · <span id="tNombre"></span></b><span><a href="../index.html" target="_blank">Ver tienda ↗</a><button id="bSalir" class="b">Cerrar sesión</button></span></header>
+  <main>
+    <div class="tools">
+      <input id="fBus" type="search" placeholder="Buscar producto…">
+      <select id="fGrupo"><option value="">Todas las secciones</option><option value="hombre">Hombre</option><option value="mujer">Mujer</option></select>
+      <button id="bNuevo" class="b n">+ Nuevo producto</button>
+    </div>
+    <p id="cuenta" class="mut"></p>
+    <div id="lista" class="lista"></div>
+  </main>
+</section>
+
+<div id="modal" class="modal" hidden>
+  <form id="fProd" class="panel">
+    <div class="ph"><h2 id="mTit">Nuevo producto</h2><button type="button" class="x" id="mX" aria-label="Cerrar">×</button></div>
+    <div class="grid2">
+      <label>Sección<select id="pGrupo"><option value="hombre">Hombre</option><option value="mujer">Mujer</option></select></label>
+      <label>Categoría<input id="pCat" list="dCat" required placeholder="Ej: Camisetas"><datalist id="dCat"></datalist></label>
+    </div>
+    <label>Nombre<input id="pNombre" required maxlength="80" placeholder="Ej: CAMISETA BÁSICA"></label>
+    <div class="grid2">
+      <label>Marca<input id="pMarca" maxlength="40" placeholder="Opcional"></label>
+      <label>Precio (COP)<input id="pPrecio" type="number" min="0" step="1000" required placeholder="80000"><small id="pPrecioF" class="mut"></small></label>
+    </div>
+    <div class="campo"><span class="et">Tallas</span>
+      <div id="presets" class="chips"></div>
+      <div class="add"><input id="pTallaX" placeholder="Otra talla (ej: 42, Única)" maxlength="8"><button type="button" class="b" id="bTalla">Agregar</button></div>
+      <div id="selT" class="chips sel"></div>
+      <small class="mut">Toca una talla elegida para marcarla como <b>agotada</b> (queda tachada). Toca la × para quitarla.</small>
+    </div>
+    <div class="campo"><span class="et">Fotos</span>
+      <label class="drop" id="drop">Arrastra fotos aquí o <u>elígelas</u><input id="pFotos" type="file" accept="image/*" multiple hidden></label>
+      <div id="fotos" class="fotos"></div>
+      <small class="mut">Se reducen solas a un tamaño ideal para la web. La primera es la principal.</small>
+    </div>
+    <label class="ck"><input id="pActivo" type="checkbox" checked> Visible en la tienda</label>
+    <p id="pErr" class="err"></p>
+    <div class="pie"><button type="button" class="b" id="mCan">Cancelar</button><button class="b n" id="mGuardar" type="submit">Guardar</button></div>
+  </form>
+</div>
+<div id="toast" class="toast" hidden></div>
+<script src="../js/datos/config.js"></script>
+<script src="../js/datos/tienda.js"></script>
+<script src="../js/datos/menu.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

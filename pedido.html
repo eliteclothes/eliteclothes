@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tu pedido · Elite Clothes</title><link rel="icon" href="img/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<style>
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--claro)}
+  .ped{width:100%;max-width:520px;text-align:center;padding:38px 28px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.1)}
+  .ped img{height:46px;margin-bottom:18px}
+  .ped h1{margin:0 0 10px;font:500 36px var(--titulos)}
+  .ped p{margin:0 0 12px;line-height:1.5;color:var(--suave)}
+  .ped .ref{font-size:14px;letter-spacing:1px}
+  .ped .ic{font-size:44px;margin-bottom:6px}
+  .ped a.b{display:inline-block;margin:8px 5px 0;padding:13px 28px;border-radius:99px;border:1px solid var(--fondo);background:var(--fondo);color:#fff;text-decoration:none;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+  .ped a.b.o{background:transparent;color:var(--fondo)}
+  .ped button.b{margin-top:8px;padding:13px 28px;border-radius:99px;border:1px solid var(--fondo);background:transparent;cursor:pointer;font:inherit;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<main class="ped" aria-live="polite">
+  <img src="img/logo.png" alt="Elite Clothes" onerror="this.remove()">
+  <div class="ic" id="ic">⏳</div>
+  <h1 id="t">Confirmando tu pago…</h1>
+  <p id="m">Un momento, estamos verificando tu pedido con Bold.</p>
+  <p class="ref" id="ref"></p>
+  <div id="acc"></div>
+</main>
+<script src="js/datos/tienda.js"></script>
+<script>
+const q = new URLSearchParams(location.search), ref = q.get("bold-order-id") || "";
+const $ = s => document.querySelector(s);
+const cop = n => "$" + Number(n).toLocaleString("es-CO");
+const wa = `https://wa.me/${TIENDA.whatsapp}?text=` + encodeURIComponent(`Hola ${TIENDA.nombre}, tengo una consulta sobre mi pedido ${ref}`);
+const tienda = '<a class="b" href="index.html">Volver a la tienda</a>';
+const ayuda = `<a class="b o" href="${wa}" target="_blank" rel="noopener">Escribir por WhatsApp</a>`;
+const pinta = (ic, t, m, acc) => { $("#ic").textContent = ic; $("#t").textContent = t; $("#m").innerHTML = m; $("#acc").innerHTML = acc || ""; };
+let intentos = 0;
+
+async function consultar() {
+  let d;
+  try { const r = await fetch(`/.netlify/functions/estado-pedido?ref=${encodeURIComponent(ref)}`); d = await r.json(); if (!r.ok) throw 0; }
+  catch (e) { return pinta("⚠️", "No pudimos consultar tu pedido", "Si ya pagaste, tranquilo: recibirás la confirmación. Puedes escribirnos para verificarlo.", tienda + ayuda); }
+  $("#ref").textContent = "Pedido " + d.ref + " · " + cop(d.total);
+  if (d.estado === "pagado" || d.estado === "enviado") {
+    try { localStorage.removeItem("carrito"); } catch (e) {}
+    return pinta("✅", "¡Gracias por tu compra!", "Recibimos tu pago. Te contactaremos por WhatsApp o correo para coordinar el envío.", tienda + ayuda);
+  }
+  if (d.estado === "revisar") {
+    try { localStorage.removeItem("carrito"); } catch (e) {}
+    return pinta("✅", "Recibimos tu pago", "Estamos verificando la disponibilidad de tu pedido. Te escribiremos muy pronto para confirmarlo.", tienda + ayuda);
+  }
+  if (d.estado === "fallido" || d.estado === "cancelado")
+    return pinta("❌", "El pago no se completó", "No se realizó ningún cobro. Tu carrito sigue guardado para que lo intentes de nuevo.", tienda + ayuda);
+  if (++intentos < 12) return setTimeout(consultar, 4000);                      // sigue pendiente: reintenta unos segundos
+  pinta("⏳", "Tu pago está en proceso", "Algunos medios (como PSE) pueden tardar unos minutos. Cuando se confirme te contactaremos.", '<button class="b" id="otra">Revisar de nuevo</button>' + ayuda);
+  $("#otra").onclick = () => { intentos = 0; pinta("⏳", "Confirmando tu pago…", "Un momento…"); consultar(); };
+}
+if (!ref) pinta("🛍️", "No encontramos tu pedido", "Entra desde el enlace de pago o vuelve a la tienda.", tienda); else consultar();
+</script>
+</body>
+</html>
