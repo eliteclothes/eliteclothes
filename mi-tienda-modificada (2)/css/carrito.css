@@ -1,5 +1,0 @@
-/* CARRITO */
-.fila{display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--linea)}
-.fila img{width:56px;aspect-ratio:4/5;object-fit:cover;border-radius:28px 28px 4px 4px}.fila div{flex:1;font-size:14px}
-.tot{display:flex;justify-content:space-between;padding:18px 0;font:500 26px var(--titulos)}#items{flex:1}
-#pedir{background:var(--fondo);border-color:var(--fondo);color:#fff}#pedir:hover{background:var(--acento);border-color:var(--acento)}
