@@ -46,7 +46,7 @@ $("#fLogin").onsubmit = async e => {
 $("#bSalir").onclick = salir;
 
 // ---------- lista ----------
-async function cargar() { prods = await api("/rest/v1/productos?select=*&order=orden.asc,id.desc"); pintar(); }
+async function cargar() { prods = await api("/rest/v1/productos?select=*&order=orden.asc,id.desc"); pintar(); if (typeof contarNuevos === "function") contarNuevos(); }
 function pintar() {
   const q = $("#fBus").value.trim().toLowerCase(), g = $("#fGrupo").value;
   const l = prods.filter(p => (!g || p.grupo === g) && (!q || `${p.nombre} ${p.marca} ${p.cat}`.toLowerCase().includes(q)));
@@ -54,7 +54,7 @@ function pintar() {
   $("#lista").innerHTML = l.length ? l.map(p => `<div class="it ${p.activo ? "" : "off"}" data-id="${p.id}">
     ${p.imgs[0] ? `<img src="${esc(p.imgs[0])}" alt="">` : `<div class="ph0"></div>`}
     <div><h3>${esc(p.nombre)}</h3><div class="m">${esc(p.grupo)} · ${esc(p.cat)}${p.marca ? " · " + esc(p.marca) : ""}${p.activo ? "" : " · <b>OCULTO</b>"}</div>
-    <div class="pr">${cop(p.precio)}</div><div>${p.tallas.map(t => `<span class="tg ${p.agotadas.includes(t) ? "ag" : ""}">${esc(t)}</span>`).join("")}</div></div>
+    <div class="pr">${cop(p.precio)}</div><div>${p.tallas.map(t => `<span class="tg ${p.agotadas.includes(t) ? "ag" : ""}">${esc(t)}${p.stock && p.stock[t] != null ? " · " + p.stock[t] : ""}</span>`).join("")}</div></div>
     <div class="acc"><button class="b" data-a="ed">Editar</button><button class="b" data-a="dup">Duplicar</button><button class="b del" data-a="del">Eliminar</button></div></div>`).join("")
     : `<p class="mut">${prods.length ? "No hay resultados." : "Aún no tienes productos. Toca “+ Nuevo producto”."}</p>`;
 }
@@ -62,7 +62,7 @@ $("#fBus").oninput = pintar; $("#fGrupo").onchange = pintar;
 $("#lista").onclick = async e => {
   const a = e.target.dataset.a, id = e.target.closest(".it")?.dataset.id; if (!a) return;
   const p = prods.find(x => x.id == id);
-  if (a === "ed") abrir(p);
+  if (a === "ed") { try { const r = await api(`/rest/v1/productos?id=eq.${p.id}&select=*`); abrir(r && r[0] ? r[0] : p); } catch (x) { abrir(p); } }
   if (a === "dup") abrir({ ...p, id: null, nombre: p.nombre + " (copia)", imgs: [] });
   if (a === "del" && confirm(`¿Eliminar “${p.nombre}”? No se puede deshacer.`)) {
     try { await api(`/rest/v1/productos?id=eq.${p.id}`, { method: "DELETE" }); await borrarFotos(p.imgs); prods = prods.filter(x => x.id !== p.id); pintar(); toast("Producto eliminado"); } catch (x) { toast(x.message, true); }
@@ -70,8 +70,10 @@ $("#lista").onclick = async e => {
 };
 
 // ---------- formulario ----------
+// Unidades por talla: usa el stock guardado; si el producto es antiguo (sin stock), 1 unidad por talla disponible y 0 por agotada
+const stockInicial = p => { const st = p?.stock || {}, o = {}; (p?.tallas || []).forEach(t => { const n = Math.floor(+st[t]); o[t] = st[t] !== undefined && n >= 0 ? n : ((p.agotadas || []).includes(t) ? 0 : 1); }); return o; };
 function abrir(p) {
-  f = { id: p?.id || null, tallas: [...(p?.tallas || [])], agotadas: [...(p?.agotadas || [])], imgs: [...(p?.imgs || [])], originales: p?.id ? [...p.imgs] : [], nuevas: [], subiendo: 0 };
+  f = { id: p?.id || null, tallas: [...(p?.tallas || [])], agotadas: [...(p?.agotadas || [])], stock: stockInicial(p), imgs: [...(p?.imgs || [])], originales: p?.id ? [...p.imgs] : [], nuevas: [], subiendo: 0 };
   $("#mTit").textContent = p?.id ? "Editar producto" : "Nuevo producto";
   $("#pGrupo").value = p?.grupo || "hombre"; $("#pCat").value = p?.cat || ""; $("#pNombre").value = p?.nombre || ""; $("#pMarca").value = p?.marca || "";
   $("#pPrecio").value = p?.precio ?? ""; $("#pActivo").checked = p?.activo ?? true; $("#pErr").textContent = ""; $("#mGuardar").disabled = false;
@@ -87,16 +89,18 @@ $("#pPrecio").oninput = precioF;
 function pintarTallas() {
   $("#presets").innerHTML = PRESETS.map(t => `<button type="button" data-t="${t}" class="${f.tallas.includes(t) ? "on" : ""}">${t}</button>`).join("");
   f.tallas.sort((a, b) => { const i = ORDEN.indexOf(a), j = ORDEN.indexOf(b); return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || a.localeCompare(b, "es", { numeric: true }); });
-  $("#selT").innerHTML = f.tallas.length ? f.tallas.map(t => `<span class="${f.agotadas.includes(t) ? "ag" : ""}"><b data-t="${esc(t)}" title="Marcar agotada / disponible">${esc(t)}</b><i data-q="${esc(t)}" title="Quitar">×</i></span>`).join("") : '<small class="mut">Aún no has elegido tallas.</small>';
+  $("#selT").innerHTML = f.tallas.length ? f.tallas.map(t => `<span class="${f.stock[t] === 0 ? "ag" : ""}"><b>${esc(t)}</b><input type="number" min="0" step="1" inputmode="numeric" value="${f.stock[t] ?? 0}" data-s="${esc(t)}" aria-label="Unidades talla ${esc(t)}"><i data-q="${esc(t)}" title="Quitar">×</i></span>`).join("") : '<small class="mut">Aún no has elegido tallas.</small>';
 }
-function quitarT(t) { f.tallas = f.tallas.filter(x => x !== t); f.agotadas = f.agotadas.filter(x => x !== t); }
-$("#presets").onclick = e => { const t = e.target.dataset.t; if (!t) return; f.tallas.includes(t) ? quitarT(t) : f.tallas.push(t); pintarTallas(); };
+function quitarT(t) { f.tallas = f.tallas.filter(x => x !== t); f.agotadas = f.agotadas.filter(x => x !== t); delete f.stock[t]; }
+$("#presets").onclick = e => { const t = e.target.dataset.t; if (!t) return; f.tallas.includes(t) ? quitarT(t) : (f.tallas.push(t), f.stock[t] = 1); pintarTallas(); };
 $("#selT").onclick = e => {
   if (e.target.dataset.q) { quitarT(e.target.dataset.q); return pintarTallas(); }
-  const t = e.target.dataset.t; if (!t) return;
-  f.agotadas.includes(t) ? f.agotadas = f.agotadas.filter(x => x !== t) : f.agotadas.push(t); pintarTallas();
 };
-const addT = () => { const t = $("#pTallaX").value.trim(); if (t && !f.tallas.includes(t)) f.tallas.push(t); $("#pTallaX").value = ""; pintarTallas(); };
+$("#selT").oninput = e => {                       // al cambiar el número: 0 = agotada (se tacha al instante)
+  const t = e.target.dataset.s; if (t == null) return;
+  f.stock[t] = Math.max(0, Math.floor(+e.target.value || 0)); e.target.closest("span").classList.toggle("ag", f.stock[t] === 0);
+};
+const addT = () => { const t = $("#pTallaX").value.trim(); if (t && !f.tallas.includes(t)) { f.tallas.push(t); f.stock[t] = 1; } $("#pTallaX").value = ""; pintarTallas(); };
 $("#bTalla").onclick = addT; $("#pTallaX").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); addT(); } };
 
 // ---------- fotos (se reducen en el navegador y se suben a Supabase Storage) ----------
@@ -145,8 +149,9 @@ $("#fProd").onsubmit = async e => {
   e.preventDefault(); $("#pErr").textContent = "";
   if (f.subiendo) return $("#pErr").textContent = "Espera a que terminen de subir las fotos.";
   if (!f.tallas.length && !confirm("No elegiste ninguna talla. ¿Guardar así?")) return;
+  const stock = Object.fromEntries(f.tallas.map(t => [t, Math.max(0, Math.floor(+f.stock[t] || 0))]));
   const d = { grupo: $("#pGrupo").value, nombre: $("#pNombre").value.trim(), marca: $("#pMarca").value.trim(), cat: $("#pCat").value.trim(), precio: Math.max(0, Math.round(+$("#pPrecio").value || 0)),
-    imgs: f.imgs, tallas: f.tallas, agotadas: f.agotadas.filter(t => f.tallas.includes(t)), activo: $("#pActivo").checked };
+    imgs: f.imgs, tallas: f.tallas, agotadas: f.tallas.filter(t => stock[t] === 0), stock, activo: $("#pActivo").checked };
   $("#mGuardar").disabled = true;
   try {
     if (f.id) await api(`/rest/v1/productos?id=eq.${f.id}`, { method: "PATCH", json: d }); else await api("/rest/v1/productos", { method: "POST", json: d });

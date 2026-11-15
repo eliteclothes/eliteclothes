@@ -61,6 +61,31 @@ async function consultarBold(ref) {
   return r.json();
 }
 
+// ---- Aviso al dueño por WhatsApp (API oficial de Meta). Si faltan las variables, simplemente no hace nada ----
+const puntos = n => String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const sinSaltos = s => String(s || "").replace(/[\r\n\t]+/g, " ").replace(/ {2,}/g, " ").trim();
+async function avisarDueno(pedidoId) {
+  const token = env("WHATSAPP_TOKEN"), phoneId = env("WHATSAPP_PHONE_ID"), plantilla = env("WHATSAPP_TEMPLATE"), destino = env("AVISO_WHATSAPP").replace(/\D/g, "");
+  if (!token || !phoneId || !plantilla || !destino) return;
+  const mio = await sb(`pedidos?id=eq.${pedidoId}&avisado=eq.false`, { method: "PATCH", prefer: "return=representation", body: { avisado: true } });   // reclama el aviso: solo uno por pedido
+  if (!mio || !mio.length) return;
+  const p = mio[0];
+  try {
+    const items = await sb(`pedido_items?select=nombre,talla,cantidad&pedido_id=eq.${pedidoId}`);
+    const resumen = sinSaltos(items.map(i => `${i.cantidad}x ${i.nombre} (${i.talla})`).join(", ")).slice(0, 300) || "-";
+    const valores = [p.ref, p.nombre, "$" + puntos(p.total), resumen, sinSaltos(`${p.ciudad}${p.departamento ? ", " + p.departamento : ""}`)];
+    const r = await fetch(`https://graph.facebook.com/${env("WHATSAPP_API_VERSION") || "v23.0"}/${phoneId}/messages`, {
+      method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ messaging_product: "whatsapp", to: destino, type: "template",
+        template: { name: plantilla, language: { code: env("WHATSAPP_LANG") || "es" }, components: [{ type: "body", parameters: valores.map(text => ({ type: "text", text: sinSaltos(text) || "-" })) }] } })
+    });
+    if (!r.ok) throw new Error("WhatsApp " + r.status + ": " + (await r.text()));
+  } catch (e) {
+    await sb(`pedidos?id=eq.${pedidoId}`, { method: "PATCH", prefer: "return=minimal", body: { avisado: false } }).catch(() => {});   // para poder reintentar
+    console.error("aviso WhatsApp:", e.message);
+  }
+}
+
 // Pregunta a Bold (servidor a servidor, no se puede falsificar desde el navegador) y actualiza el pedido. Se puede repetir sin riesgo.
 async function sincronizar(ped) {
   if (!["pendiente", "fallido"].includes(ped.estado)) return ped.estado;
@@ -73,6 +98,7 @@ async function sincronizar(ped) {
     }
     if (v.transaction_id) await sb(`pedidos?id=eq.${ped.id}`, { method: "PATCH", prefer: "return=minimal", body: { bold_tx: v.transaction_id } });
     const res = await sb("rpc/descontar_stock_pedido", { method: "POST", body: { p_pedido: ped.id } });
+    await avisarDueno(ped.id).catch(e => console.error("aviso:", e.message));
     return res === "sin_stock" ? "revisar" : "pagado";
   }
   if ((st === "REJECTED" || st === "FAILED") && ped.estado === "pendiente") {

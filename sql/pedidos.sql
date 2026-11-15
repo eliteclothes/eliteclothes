@@ -35,6 +35,7 @@ create table if not exists public.pedidos (
   guia             text    not null default '',        -- número de guía del envío
   stock_descontado boolean not null default false,
   visto            boolean not null default false,     -- el dueño ya lo abrió en el panel
+  avisado          boolean not null default false,     -- ya se le avisó al dueño por WhatsApp
   creado           timestamptz not null default now(),
   pagado_en        timestamptz,
   enviado_en       timestamptz
@@ -50,6 +51,9 @@ create table if not exists public.pedido_items (
   precio      integer not null,
   img         text    not null default ''
 );
+
+-- (si la tabla ya existía, esto agrega la columna nueva)
+alter table public.pedidos add column if not exists avisado boolean not null default false;
 
 create index if not exists pedidos_estado_creado on public.pedidos (estado, creado desc);
 create index if not exists pedido_items_pedido   on public.pedido_items (pedido_id);

@@ -36,6 +36,7 @@ const cop = n => "$" + Number(n).toLocaleString("es-CO");
 const wa = `https://wa.me/${TIENDA.whatsapp}?text=` + encodeURIComponent(`Hola ${TIENDA.nombre}, tengo una consulta sobre mi pedido ${ref}`);
 const tienda = '<a class="b" href="index.html">Volver a la tienda</a>';
 const ayuda = `<a class="b o" href="${wa}" target="_blank" rel="noopener">Escribir por WhatsApp</a>`;
+const avisar = t => `<a class="b o" href="https://wa.me/${TIENDA.whatsapp}?text=${encodeURIComponent(`Hola ${TIENDA.nombre}, acabo de pagar mi pedido ${ref} por ${cop(t)}.`)}" target="_blank" rel="noopener">Avisar a la tienda por WhatsApp</a>`;
 const pinta = (ic, t, m, acc) => { $("#ic").textContent = ic; $("#t").textContent = t; $("#m").innerHTML = m; $("#acc").innerHTML = acc || ""; };
 let intentos = 0;
 
@@ -46,7 +47,7 @@ async function consultar() {
   $("#ref").textContent = "Pedido " + d.ref + " · " + cop(d.total);
   if (d.estado === "pagado" || d.estado === "enviado") {
     try { localStorage.removeItem("carrito"); } catch (e) {}
-    return pinta("✅", "¡Gracias por tu compra!", "Recibimos tu pago. Te contactaremos por WhatsApp o correo para coordinar el envío.", tienda + ayuda);
+    return pinta("✅", "¡Gracias por tu compra!", "Recibimos tu pago. Te contactaremos por WhatsApp o correo para coordinar el envío.", tienda + avisar(d.total));
   }
   if (d.estado === "revisar") {
     try { localStorage.removeItem("carrito"); } catch (e) {}

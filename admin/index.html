@@ -22,6 +22,8 @@
 <section id="app" hidden>
   <header class="bar"><b>Panel · <span id="tNombre"></span></b><span><a href="../index.html" target="_blank">Ver tienda ↗</a><button id="bSalir" class="b">Cerrar sesión</button></span></header>
   <main>
+    <nav class="tabs"><button type="button" class="on" data-v="vProd">Productos</button><button type="button" data-v="vPed">Pedidos <span id="nNuevos" class="bd" hidden></span></button></nav>
+    <div id="vProd">
     <div class="tools">
       <input id="fBus" type="search" placeholder="Buscar producto…">
       <select id="fGrupo"><option value="">Todas las secciones</option><option value="hombre">Hombre</option><option value="mujer">Mujer</option></select>
@@ -29,6 +31,18 @@
     </div>
     <p id="cuenta" class="mut"></p>
     <div id="lista" class="lista"></div>
+    </div>
+    <div id="vPed" hidden>
+      <div class="tools tp">
+        <select id="pFiltro">
+          <option value="atender">Por atender (pagados)</option><option value="nuevos">Nuevos sin abrir</option><option value="enviado">Enviados</option>
+          <option value="sinpago">Sin pagar / fallidos</option><option value="revisar">Revisar (sin stock)</option><option value="cancelado">Cancelados</option><option value="todos">Todos</option>
+        </select>
+        <button id="pRef" class="b" type="button">Actualizar</button>
+      </div>
+      <p id="pCuenta" class="mut"></p>
+      <div id="pLista" class="lista"></div>
+    </div>
   </main>
 </section>
 
@@ -48,7 +62,7 @@
       <div id="presets" class="chips"></div>
       <div class="add"><input id="pTallaX" placeholder="Otra talla (ej: 42, Única)" maxlength="8"><button type="button" class="b" id="bTalla">Agregar</button></div>
       <div id="selT" class="chips sel"></div>
-      <small class="mut">Toca una talla elegida para marcarla como <b>agotada</b> (queda tachada). Toca la × para quitarla.</small>
+      <small class="mut">Escribe cuántas unidades hay de cada talla. Con <b>0</b> queda <b>agotada</b> (tachada) y no se puede comprar. Toca la × para quitar la talla. Cada venta pagada descuenta el stock sola.</small>
     </div>
     <div class="campo"><span class="et">Fotos</span>
       <label class="drop" id="drop">Arrastra fotos aquí o <u>elígelas</u><input id="pFotos" type="file" accept="image/*" multiple hidden></label>
@@ -60,10 +74,12 @@
     <div class="pie"><button type="button" class="b" id="mCan">Cancelar</button><button class="b n" id="mGuardar" type="submit">Guardar</button></div>
   </form>
 </div>
+<div id="mPed" class="modal" hidden><div class="panel" id="pdBox"></div></div>
 <div id="toast" class="toast" hidden></div>
 <script src="../js/datos/config.js"></script>
 <script src="../js/datos/tienda.js"></script>
 <script src="../js/datos/menu.js"></script>
 <script src="admin.js"></script>
+<script src="pedidos.js"></script>
 </body>
 </html>
