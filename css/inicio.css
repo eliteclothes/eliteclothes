@@ -46,7 +46,7 @@
 .filtro button{border:0;background:none;text-decoration:underline}
 .track{display:flex;gap:20px;overflow-x:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;touch-action:pan-y}
 .card{flex:0 0 calc(25% - 15px);scroll-snap-align:start;text-decoration:none;min-width:0}
-.im{aspect-ratio:1/1;width:100%;background-color:#e4dccd;background-size:cover;background-position:center;background-repeat:no-repeat;margin-bottom:14px;border-radius:8px;transition:transform .4s}
+.im{aspect-ratio:1/1;width:100%;background-color:#f1f1f1;background-size:cover;background-position:center;background-repeat:no-repeat;margin-bottom:14px;border-radius:8px;transition:transform .4s}
 .card:hover .im{transform:translateY(-4px)}
 .cat{font-size:11px;letter-spacing:2px;color:var(--acento);text-transform:uppercase;margin-bottom:4px}
 .nm{font:500 22px/1.15 var(--titulos);margin-bottom:6px}
@@ -62,7 +62,7 @@
 /* Beneficios: tres tarjetas redondeadas */
 .benef{display:grid;gap:14px;padding:46px 16px;background:var(--claro);text-align:center}
 .benef .g{display:contents}
-.benef .it{padding:30px 22px;border:1px solid var(--linea);border-radius:22px;background:#fbf8f3}
+.benef .it{padding:30px 22px;border:1px solid var(--linea);border-radius:22px;background:var(--tarjeta)}
 .benef .it svg{width:34px;height:34px;margin-bottom:12px;fill:none;stroke:var(--acento);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .benef b{display:block;font:500 24px var(--titulos);margin-bottom:6px}
 .benef p{margin:0 auto;max-width:260px;color:var(--suave)}

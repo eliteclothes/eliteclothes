@@ -5,10 +5,10 @@
   let cerrado = false;
   try { cerrado = sessionStorage.getItem("anuncios-cerrados") === "1"; } catch (e) {}
   if (!ANUNCIOS.length || cerrado) { bar.hidden = true; return; }
-  const fmt = t => t.replace("{envioGratis}", TIENDA.envioGratis ? cop(TIENDA.envioGratis) : "").replace("{diasCambio}", LEGAL.diasCambio);
+  const fmt = t => t.replace("{envioGratis}", TIENDA.envioGratis ? cop(TIENDA.envioGratis) : "").replace("{diasCambio}", LEGAL.diasCambio).replace("{whatsapp}", TIENDA.whatsapp);
   const varios = ANUNCIOS.length > 1;
   bar.innerHTML = `${varios ? '<button class="an-b" data-d="-1" aria-label="Anterior">‹</button>' : ""}
-    <div class="an-v" aria-live="polite">${ANUNCIOS.map((a, i) => `${a.enlace ? `<a href="${a.enlace}"` : "<span"} class="an${i ? "" : " on"}">${fmt(a.texto)}${a.enlace ? "</a>" : "</span>"}`).join("")}</div>
+    <div class="an-v" aria-live="polite">${ANUNCIOS.map((a, i) => `${a.enlace ? `<a href="${fmt(a.enlace)}"${/^https?:/.test(a.enlace) ? ' target="_blank" rel="noopener"' : ""}` : "<span"} class="an${i ? "" : " on"}">${fmt(a.texto)}${a.enlace ? "</a>" : "</span>"}`).join("")}</div>
     ${varios ? '<button class="an-b" data-d="1" aria-label="Siguiente">›</button>' : ""}<button class="an-x" aria-label="Cerrar anuncios">✕</button>`;
   const items = [...bar.querySelectorAll(".an")];
   let i = 0, t = null;

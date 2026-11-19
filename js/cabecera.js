@@ -2,7 +2,7 @@
 // ---------- Encabezado, textos, beneficios y pies ----------
 $("#logo").innerHTML = TIENDA.logo ? `<img src="${TIENDA.logo}" alt="${TIENDA.nombre}">` : TIENDA.nombre;
 $("#titulo").innerHTML = `${TIENDA.lema1}<br><span>${TIENDA.lema2}</span>`;
-$("#wa").href = `https://wa.me/${TIENDA.whatsapp}`;
+$("#wa").href = `https://wa.me/${TIENDA.whatsapp}?text=${encodeURIComponent("Hola " + TIENDA.nombre + ", quiero más información")}`;
 $("#benef").innerHTML = `<div class="it f">${ICO.caja}<b>Envíos a todo el país</b><p>${TIENDA.envios}</p></div>
   <div class="g"><div class="it">${ICO.chat}<b>Asesoría directa</b><p>Resolvemos tus dudas por WhatsApp.</p></div>
   <div class="it">${ICO.lock}<b>Compra tranquila</b><p>Pagos protegidos y atención cercana.</p></div></div>`;

@@ -1,5 +1,5 @@
 /* CONEXIÓN CON LA BASE DE DATOS (Supabase). Mira GUIA-ADMIN.md para llenarla.
-   Si url y key están vacías, la página usa los productos de hombre.js / mujer.js / kids.js. */
+   Si url y key están vacías, el catálogo se verá vacío. */
 // EDITA AQUÍ: los dos datos que te da Supabase (Project Settings > API)
 const SUPABASE = {
   url: "https://phvtzzxhzipbyppjdpud.supabase.co",   

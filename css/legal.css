@@ -12,7 +12,7 @@
 .corto ul{margin:10px 0 0;padding:0;list-style:none}
 .corto li{position:relative;margin:7px 0;padding-left:20px}
 .corto li::before{content:"";position:absolute;left:0;top:.72em;width:7px;height:7px;border-radius:50%;background:var(--acento)}
-.lc{margin:0 0 14px;padding:20px 24px;background:#fbf8f3;border:1px solid var(--linea);border-radius:14px;transition:border-color .25s,transform .25s,box-shadow .25s}
+.lc{margin:0 0 14px;padding:20px 24px;background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;transition:border-color .25s,transform .25s,box-shadow .25s}
 .lc:hover{border-color:var(--acento);transform:translateY(-2px);box-shadow:0 10px 24px -16px rgba(26,22,18,.4)}
 .lc h2{display:flex;align-items:baseline;gap:12px;margin:0 0 10px;font:500 25px/1.2 var(--titulos);color:var(--tinta)}
 .lc h2 .n{flex:none;font:500 12px var(--cuerpo);letter-spacing:2px;color:var(--acento)}

@@ -1,15 +1,15 @@
 /* PIES DE PÁGINA y botón de WhatsApp */
-.negro{background:var(--fondo);color:#f4efe7;padding:64px 24px 34px;text-align:center}
+.negro{background:var(--fondo);color:#ffffff;padding:64px 24px 34px;text-align:center}
 .negro h2{margin:0;font:500 34px var(--titulos);letter-spacing:4px}
 .negro .es{font:italic 500 18px var(--titulos);color:var(--acento);margin:8px 0 38px}
 .negro h3{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--acento);margin:0 0 14px;font-weight:500}
-.negro a{display:block;color:#f4efe7;text-decoration:none;line-height:2.1;opacity:.9}.negro a:hover{color:var(--acento)}
+.negro a{display:block;color:#ffffff;text-decoration:none;line-height:2.1;opacity:.9}.negro a:hover{color:var(--acento)}
 .negro .inf{opacity:.75;font-size:14px;line-height:2;margin-bottom:0}
 .negro hr{border:0;height:1px;background:linear-gradient(to right,transparent,var(--acento),transparent);margin:36px 0 22px;opacity:.6}
 .negro small{font-size:11px;opacity:.55;letter-spacing:1.2px}
-.oscuro{background:#0e0c0a;color:#f4efe7;text-align:center;padding:24px 20px 40px}
+.oscuro{background:#0e0c0a;color:#ffffff;text-align:center;padding:24px 20px 40px}
 .oscuro .rs{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
-.oscuro .rs a{padding:12px;border:1px solid #f4efe733;border-radius:50%;margin:0 4px;transition:.25s}.oscuro .rs a:hover{border-color:var(--acento);color:var(--acento)}
+.oscuro .rs a{padding:12px;border:1px solid #ffffff33;border-radius:50%;margin:0 4px;transition:.25s}.oscuro .rs a:hover{border-color:var(--acento);color:var(--acento)}
 .oscuro svg{width:20px;height:20px;fill:currentColor;display:block}
 .oscuro small{display:block;font-size:12px;opacity:.7;margin:4px 0}
 .oscuro .po{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px}

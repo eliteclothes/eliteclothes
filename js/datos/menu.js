@@ -4,7 +4,8 @@ const MENU = [
   // href: "#hombre" = pestaña completa | "#hombre/Camisetas" = solo productos cuyo "cat" sea Camisetas
   { t: "INICIO", sub: [{ t: "Ir al inicio", href: "#inicio" }] },
   { t: "HOMBRE", g: "hombre", sub: [{ t: "Ver todo", href: "#hombre" }, { t: "Camisetas", href: "#hombre/Camisetas" }, { t: "Buzos", href: "#hombre/Buzos" }, { t: "Prendas inferiores", href: "#hombre/Prendas inferiores" }, { t: "Calzado", href: "#hombre/Calzado" }, { t: "Conjuntos", href: "#hombre/Conjuntos" }, { t: "Perfumes", href: "#hombre/Perfumes" }, { t: "Relojes", href: "#hombre/Relojes" }, { t: "Gorras", href: "#hombre/Gorras" }, { t: "Accesorios", href: "#hombre/Accesorios" }] },
-  { t: "MUJER", g: "mujer", sub: [{ t: "Próximamente", href: "#mujer" }] }
+  { t: "MUJER", g: "mujer", sub: [{ t: "Próximamente", href: "#mujer" }] },
+  { t: "SEDES", sub: [{ t: "Cómo llegar", href: "#sedes" }] }
 ];
 
 // EDITA AQUÍ: título y descripción de cada sección del catálogo

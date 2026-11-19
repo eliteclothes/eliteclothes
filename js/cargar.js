@@ -12,6 +12,6 @@
       }));
     } catch (e) { console.warn("No se pudo leer la base de datos; se usan los productos locales.", e); }
   }
-  for (const s of ["util", "cabecera", "rutas", "inicio", "catalogo", "producto", "legal", "carrito", "checkout", "anuncios", "cargando", "app"])
+  for (const s of ["util", "cabecera", "sedes", "rutas", "inicio", "catalogo", "producto", "legal", "carrito", "checkout", "anuncios", "cargando", "app"])
     await new Promise(ok => { const e = document.createElement("script"); e.src = `js/${s}.js`; e.async = false; e.onload = e.onerror = ok; document.body.appendChild(e); });
 })();

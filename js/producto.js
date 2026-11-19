@@ -15,7 +15,7 @@ function verProducto(g, i) {
   <div class="lb">Talla</div><div class="tl">${p.tallas.map(x => { const ag = p.agotadas.includes(x); return `<button class="${ag ? "ago" : x === selP.t ? "sel" : ""}" ${ag ? "disabled" : ""} data-t="${x}">${x}</button>`; }).join("")}</div>
   <div class="caja"><div>● ${selP.t ? "Disponible ahora" : "Agotado"}</div>${TIENDA.envioGratis ? `<div class="env">Envío gratis por compras superiores a ${cop(TIENDA.envioGratis)}</div>` : ""}</div>
   <button class="bt" id="add" ${selP.t ? "" : "disabled"}>Agregar al carrito</button><button class="bt n" id="ya" ${selP.t ? "" : "disabled"}>Comprar ahora</button>
-  ${TIENDA.retiro ? `<div class="ret">✓ Retiro disponible en <b>${TIENDA.retiro}</b><small>Normalmente está listo en 1 hora</small><a href="https://wa.me/${TIENDA.whatsapp}" target="_blank" rel="noopener">Verificar disponibilidad en otras tiendas</a></div>` : ""}
+  ${TIENDA.retiro ? `<div class="ret">✓ Retiro disponible en <b>${TIENDA.retiro}</b><small>Normalmente está listo en 1 hora</small><a href="https://wa.me/${TIENDA.whatsapp}?text=${encodeURIComponent("Hola, ¿tienen disponible " + p.nombre + " en otra sede?")}" target="_blank" rel="noopener">Verificar disponibilidad en otras sedes</a></div>` : ""}
   <div class="pgs">${TIENDA.pagos.map(pagoIcono).join("")}<small>${TIENDA.pagosTexto}</small><b>Comunícate a nuestro WhatsApp</b></div>
   <div class="cal"><b>✔ ${TIENDA.calidadTitulo}</b><p>${TIENDA.calidadTexto}</p></div>
   ${ACORDEONES().map(x => `<details><summary>${x[0]}</summary><p>${x[1]}</p></details>`).join("")}</div></div>

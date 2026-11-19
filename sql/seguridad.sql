@@ -1,5 +1,5 @@
--- SEGURIDAD: que SOLO TÚ (con tu correo) puedas editar productos y fotos.
--- 1) Cambia TU_CORREO@dominio.com (aparece 8 veces) por el correo con el que entras al panel.
+-- SEGURIDAD: que SOLO TÚ (con tu correo) puedas editar productos y fotos, y ver los pedidos de los clientes.
+-- 1) Cambia TU_CORREO@dominio.com (aparece 10 veces) por el correo con el que entras al panel (Ctrl + H en el Bloc de notas reemplaza todas de una vez).
 -- 2) Pégalo en Supabase > SQL Editor > New query > Run.
 -- 3) Además apaga los registros: Authentication > Sign In / Providers > desactiva "Allow new users to sign up".
 
@@ -20,3 +20,15 @@ create policy "admin edita fotos" on storage.objects for update to authenticated
   using (bucket_id = 'fotos' and (auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
 create policy "admin borra fotos" on storage.objects for delete to authenticated
   using (bucket_id = 'fotos' and (auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
+
+-- Pedidos y datos de clientes: también SOLO el dueño (requiere haber corrido pedidos.sql)
+drop policy if exists "admin ve pedidos"    on public.pedidos;
+drop policy if exists "admin edita pedidos" on public.pedidos;
+drop policy if exists "admin ve items"      on public.pedido_items;
+create policy "admin ve pedidos" on public.pedidos for select to authenticated
+  using ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
+create policy "admin edita pedidos" on public.pedidos for update to authenticated
+  using ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com')
+  with check ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
+create policy "admin ve items" on public.pedido_items for select to authenticated
+  using ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
