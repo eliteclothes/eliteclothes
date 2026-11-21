@@ -12,7 +12,7 @@ $("#bNext").onclick = () => ver(actual() + 1);
 $("#bPausa").onclick = e => { pausa = !pausa; e.target.textContent = pausa ? "▶" : "❚❚"; };
 sl.onscroll = () => pts.forEach((p, j) => p.classList.toggle("on", actual() === j));
 sl.onscroll();
-setInterval(() => { if (!pausa) ver(actual() + 1); }, 7000);
+setInterval(() => { if (!pausa) ver(actual() + 1); }, 4000);
 
 // ---------- Secciones de catálogo (una por grupo) ----------
 $("#secciones").innerHTML = GRUPOS.map(g => SECCIONES[g].proximamente ? `<section class="sec" id="${g}"><div class="sec-in"><h2>${SECCIONES[g].titulo}</h2><p class="prox">Próximamente</p></div></section>` : `<section class="sec" id="${g}"><div class="sec-in"><h2>${SECCIONES[g].titulo}</h2><a class="vt" href="#${g}">Ver todo →</a><p>${SECCIONES[g].texto}</p><div class="filtro"></div><div class="track"></div><div class="ctl"><button class="pv" aria-label="Anterior">‹</button><span class="cn"></span><button class="nx" aria-label="Siguiente">›</button></div></div></section>`).join("");
