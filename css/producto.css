@@ -2,7 +2,7 @@
 [hidden]{display:none!important}
 #producto{max-width:1180px;margin:auto;padding:clamp(28px,5vw,64px) 18px 64px}
 .gal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
-.gal img{width:100%;aspect-ratio:1/1;object-fit:cover;object-position:center;background:#f1f1f1;border-radius:8px}
+.gal img{width:100%;aspect-ratio:1/1;object-fit:cover;object-position:center;background:#ffffff;border-radius:8px}
 .mig{margin:16px 0 14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--suave)}.mig a{text-decoration:none}.mig a:hover{color:var(--acento)}
 .pm{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--acento)}
 .pt{margin:4px 0 10px;font:500 clamp(38px,6vw,56px)/1 var(--titulos)}

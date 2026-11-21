@@ -26,7 +26,7 @@ function contar(g) {
 function pintar(g) {
   if (SECCIONES[g].proximamente) return;
   const r = $("#" + g), f = filt[g], t = $(".track", r);
-  const l = PRODUCTOS[g].map((p, i) => ({ p, i })).filter(({ p }) => (!f || p.cat === f) && (!q || `${p.nombre} ${p.marca} ${p.cat}`.toLowerCase().includes(q)));
+  const l = PRODUCTOS[g].map((p, i) => ({ p, i })).filter(({ p }) => (!f || mismaCat(p.cat, f)) && (!q || `${p.nombre} ${p.marca} ${p.cat}`.toLowerCase().includes(q)));
   $(".filtro", r).innerHTML = f ? `Mostrando: <b>${f}</b> · <button class="quitar">Ver todo</button>` : "";
   t.innerHTML = l.length ? l.map(({ p, i }) => cardH(g, i, p)).join("") : "<p>No encontramos productos.</p>";
   t.scrollLeft = 0; contar(g);

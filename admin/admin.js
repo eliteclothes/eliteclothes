@@ -150,7 +150,7 @@ $("#fProd").onsubmit = async e => {
   if (f.subiendo) return $("#pErr").textContent = "Espera a que terminen de subir las fotos.";
   if (!f.tallas.length && !confirm("No elegiste ninguna talla. ¿Guardar así?")) return;
   const stock = Object.fromEntries(f.tallas.map(t => [t, Math.max(0, Math.floor(+f.stock[t] || 0))]));
-  const d = { grupo: $("#pGrupo").value, nombre: $("#pNombre").value.trim(), marca: $("#pMarca").value.trim(), cat: $("#pCat").value.trim(), precio: Math.max(0, Math.round(+$("#pPrecio").value || 0)),
+  const d = { grupo: $("#pGrupo").value, nombre: $("#pNombre").value.trim(), marca: $("#pMarca").value.trim(), cat: canonCat($("#pGrupo").value, $("#pCat").value), precio: Math.max(0, Math.round(+$("#pPrecio").value || 0)),
     imgs: f.imgs, tallas: f.tallas, agotadas: f.tallas.filter(t => stock[t] === 0), stock, activo: $("#pActivo").checked };
   $("#mGuardar").disabled = true;
   try {

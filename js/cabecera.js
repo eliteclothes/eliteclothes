@@ -16,7 +16,7 @@ $("#oscuro").innerHTML = `<div class="rs"><a href="${TIENDA.instagram}" aria-lab
 addEventListener("scroll", () => $("#top").classList.toggle("min", scrollY > 60), { passive: true });
 
 // ---------- Paneles laterales ----------
-const nEnl = h => { const [g, f] = h.slice(1).split("/"); return PRODUCTOS[g] && !SECCIONES[g].proximamente ? PRODUCTOS[g].filter(p => !f || p.cat === decodeURIComponent(f)).length : null; };
+const nEnl = h => { const [g, f] = h.slice(1).split("/"); return PRODUCTOS[g] && !SECCIONES[g].proximamente ? PRODUCTOS[g].filter(p => !f || mismaCat(p.cat, decodeURIComponent(f))).length : null; };
 $("#drawer").innerHTML = MENU.map((m, i) => `<div class="mg" style="--i:${i}"><button class="mh" aria-expanded="false">${m.t}<i>›</i></button><div class="ms"><div>${m.sub.map(x => { const n = nEnl(x.href); return `<a class="lk" href="${x.href}">${x.t}${n ? `<em>${n}</em>` : ""}</a>`; }).join("")}</div></div></div>`).join("");
 $("#drawer").addEventListener("click", e => {
   const b = e.target.closest(".mh"); if (!b) return;

@@ -1,6 +1,7 @@
 /* VARIABLES DE COLOR Y FUENTES (aquí cambias el estilo de toda la página) y estilos generales */
 /* Para cambiar colores y fuentes edita SOLO el bloque :root */
 :root{
+  color-scheme:light;   /* evita que el navegador oscurezca o tiña la página */
   --fondo:#1a1612;      /* EDITA AQUÍ: color oscuro principal (pie, botones, detalles) */
   --encabezado:#000000; /* EDITA AQUÍ: barra superior (debe combinar con el fondo negro de tu logo) */
   --encabezado-texto:#ffffff;
@@ -20,3 +21,4 @@ body{margin:0;font:400 15px/1.6 var(--cuerpo);background:var(--claro);color:var(
 button{font:inherit;cursor:pointer;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--acento);outline-offset:2px}
+html,body{background:#ffffff}

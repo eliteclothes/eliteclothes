@@ -7,7 +7,7 @@
       const filas = await r.json();
       Object.keys(PRODUCTOS).forEach(g => PRODUCTOS[g] = []);
       filas.forEach(f => PRODUCTOS[f.grupo] && PRODUCTOS[f.grupo].push({
-        id: f.id, stock: f.stock || null, nombre: f.nombre, marca: f.marca || "", cat: f.cat, precio: f.precio,
+        id: f.id, stock: f.stock || null, nombre: f.nombre, marca: f.marca || "", cat: canonCat(f.grupo, f.cat), precio: f.precio,
         img: (f.imgs && f.imgs[0]) || "", imgs: f.imgs || [], tallas: f.tallas || [], agotadas: f.agotadas || []
       }));
     } catch (e) { console.warn("No se pudo leer la base de datos; se usan los productos locales.", e); }

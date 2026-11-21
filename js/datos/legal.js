@@ -3,18 +3,18 @@
    2) Los valores sin [COMPLETAR] (tiempos, plazos, costos) son SUGERIDOS: cámbialos por los de tu operación real.
    3) Cada página tiene "resumen" (la cajita "En corto") y "secciones" (las tarjetas). Edita el texto con calma, solo lo que está entre comillas/comillas invertidas. */
 const LEGAL = {
-  fecha: "18 de noviembre de 2026",
+  fecha: "6 de noviembre de 2026",
   // ---- DATOS DEL NEGOCIO Y PERSONALES (los llenas tú) ----
-  razonSocial: "Sebastian Correa García",
-  nit: "1001640077",
-  ciudad: "Medellín, Antioquia, Colombia",
-  direccion: "Cl. 108 #80-25, Medellín, Antioquia, Colombia - Cl. 20E #43-12, Bello, Antioquia, Colombia",
-  direccionCambios: "Cl. 20E #43-12, Bello, Antioquia, Colombia",
-  correo: "clotheselite13@gmail.com",
-  horario: "Lunes a Sábado, 11:00 a.m - 9:00 p.m. Domingos, 11:00 a.m - 8:00 p.m",
+  razonSocial: "[COMPLETAR: nombre completo o razón social del titular]",
+  nit: "[COMPLETAR: NIT o cédula]",
+  ciudad: "[COMPLETAR: ciudad y departamento]",
+  direccion: "[COMPLETAR: dirección, o escribe: Venta exclusivamente en línea]",
+  direccionCambios: "[COMPLETAR: dirección a la que se envían cambios y devoluciones]",
+  correo: "[COMPLETAR: correo de contacto]",
+  horario: "[COMPLETAR: ej. lunes a sábado, 10:00 a. m. a 8:00 p. m.]",
   mediosPago: "tarjetas, PSE y los demás medios que se muestren al momento de pagar",
-  transportadoras: "INTERRAPIDÍSIMO",
-  costoEnvio: "entre $13.000 y $30.000 según destino y peso",
+  transportadoras: "[COMPLETAR: ej. Servientrega, Interrapidísimo]",
+  costoEnvio: "[COMPLETAR: ej. entre $13.000 y $30.000 según destino y peso]",
   // ---- POLÍTICAS (valores sugeridos: ajústalos a lo que realmente haces) ----
   tiempoLocal: "el mismo día o al siguiente día hábil",
   tiempoNacional: "de 2 a 5 días hábiles",
@@ -71,7 +71,7 @@ const LEGAL_PAGINAS = {
     secciones: () => [
     ["Cambio por talla o gusto", _p(`¿No te quedó o no te convenció? Escríbenos dentro de los <b>${_v("diasCambio")} días hábiles</b> siguientes a la entrega. Aceptamos el cambio si la prenda está sin uso, sin lavar, con etiquetas y en su empaque original, y si hay la talla o referencia que quieres.`, `El envío del cambio por talla o gusto lo paga el cliente.`)],
     ["Derecho de retracto", _p(`Como compras a distancia (WhatsApp y sitio web), puedes retractarte dentro de los <b>5 días hábiles siguientes a la entrega</b> (Estatuto del Consumidor, Ley 1480 de 2011). El producto debe estar sin uso y completo. Te devolvemos el dinero por el mismo medio de pago dentro de los 30 días calendario siguientes y los costos de la devolución los asumes tú.`, `La ley prevé excepciones, por ejemplo productos hechos a la medida o que por su naturaleza no se pueden devolver.`)],
-    ["Garantía: producto defectuoso o equivocado", _p(`Si tu pedido llega con defecto de fabricación, dañado o distinto a lo que pediste, tienes derecho a cambio y el envío corre por nuestra cuenta. Avísanos por WhatsApp con fotos <b>lo antes posible</b>; reportarlo rápido agiliza todo, pero la garantía legal no se pierde por demorarte unos días.`)],
+    ["Garantía: producto defectuoso o equivocado", _p(`Si tu pedido llega con defecto de fabricación, dañado o distinto a lo que pediste, tienes derecho a reparación, cambio o devolución del dinero, y el envío corre por nuestra cuenta. Avísanos por WhatsApp con fotos <b>lo antes posible</b>; reportarlo rápido agiliza todo, pero la garantía legal no se pierde por demorarte unos días.`)],
     ["Artículos con reglas especiales", _ul(["<b>Perfumes y artículos de higiene personal:</b> solo tienen cambio si están sellados y sin abrir.", "<b>Ropa interior y trajes de baño:</b> solo con etiquetas y sin usar, por higiene.", "<b>Promociones y liquidación:</b> pueden tener condiciones propias, indicadas en la oferta. No afectan tu derecho de retracto ni la garantía."])],
     ["Cómo pedirlo", _p(`Escríbenos por WhatsApp (${_wa()}) o a ${_v("correo")} con tu nombre, número o fecha del pedido, el producto, el motivo y fotos si aplica. Te respondemos con los pasos a seguir.`)],
     ["Cómo enviarnos el producto", _p(`Te indicaremos cómo devolverlo. Dirección para envíos de cambios y devoluciones: ${_v("direccionCambios")}.`) + _tip(`Guarda el comprobante de envío de tu devolución y empácala bien: es tu prueba de que salió, y nos ayuda a ubicarla si se retrasa.`)],
