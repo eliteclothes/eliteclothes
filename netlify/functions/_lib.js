@@ -30,13 +30,28 @@ async function tienda() {
   return _t;
 }
 
-// ---- Envío: ciudad > departamento > otras. Gratis si el subtotal SUPERA envioGratis ----
+// ---- Sedes para retiro (js/datos/sedes.js): una sola fuente para la página y el servidor ----
+let _s = null, _sHora = 0;
+async function sedes() {
+  if (_s && Date.now() - _sHora < 60000) return _s;
+  const r = await fetch(origen() + "/js/datos/sedes.js", { headers: { "Cache-Control": "no-cache" } });
+  if (!r.ok) throw new Error("No se pudo leer sedes.js (" + r.status + ")");
+  _s = new Function((await r.text()) + "\n;return typeof SEDES !== 'undefined' ? SEDES : [];")();
+  _sHora = Date.now();
+  return _s;
+}
+
+// ---- Envío: el cliente elige una zona de Medellín / Valle de Aburrá (tienda.js > envioZonas) o Interrapidísimo ----
+// Interrapidísimo: no se cobra envío en la página (el cliente paga la guía al reclamar el pedido).
+// Gratis si el subtotal SUPERA envioGratis. Devuelve null si la zona no existe.
 const norm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
-function costoEnvio(T, subtotal, departamento, ciudad) {
-  if (T.envioGratis && subtotal > T.envioGratis) return 0;
-  for (const [k, v] of Object.entries(T.envioPorCiudad || {})) if (norm(k) === norm(ciudad)) return Number(v);
-  for (const [k, v] of Object.entries(T.envioPorDepartamento || {})) if (norm(k) === norm(departamento)) return Number(v);
-  return Number(T.envioOtras || 0);
+const INTER = "Interrapidísimo";
+function resolverEnvio(T, subtotal, metodo, zona) {
+  if (metodo === "inter") return { inter: true, zona: INTER, costo: 0 };
+  const par = Object.entries(T.envioZonas || {}).find(([k]) => norm(k) === norm(zona));
+  if (!par) return null;
+  const gratis = T.envioGratis && subtotal > T.envioGratis;
+  return { inter: false, zona: par[0], costo: gratis ? 0 : Number(par[1]) };
 }
 
 // ---- Bold ----
@@ -112,4 +127,4 @@ async function sincronizar(ped) {
   return ped.estado;
 }
 
-module.exports = { env, json, origen, enc, sb, tienda, costoEnvio, hashIntegridad, firmaValida, consultarBold, sincronizar };
+module.exports = { env, json, origen, enc, sb, tienda, sedes, resolverEnvio, INTER, hashIntegridad, firmaValida, consultarBold, sincronizar };

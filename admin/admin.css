@@ -33,6 +33,8 @@ main{max-width:980px;margin:auto;padding:22px 16px 60px}
 .chips.sel span{display:inline-flex;align-items:center;padding:0;overflow:hidden;border:1px solid var(--tinta);border-radius:99px;background:#fff;cursor:pointer;user-select:none}
 .chips.sel span.ag{border-color:var(--rojo);color:var(--rojo);text-decoration:line-through}
 .chips.sel span b{font-weight:400;padding:5px 8px 5px 14px}.chips.sel span i{font-style:normal;padding:5px 12px 5px 10px;font-size:16px;line-height:1.2;text-decoration:none!important;border-left:1px solid var(--linea);color:var(--suave)}.chips.sel span i:hover{background:var(--tinta);color:#fff}
+.gt{display:block;margin:8px 0 0;font-size:12px;letter-spacing:.5px;color:var(--suave)}
+#tAyuda{display:block;margin-bottom:4px}
 .add{display:flex;gap:8px;margin:6px 0}.add .b{white-space:nowrap}
 .drop{display:block;padding:22px;text-align:center;border:2px dashed var(--linea);border-radius:18px;color:var(--suave);cursor:pointer;margin:0}.drop.over{border-color:var(--acento);background:var(--tarjeta)}
 .fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:10px 0}

@@ -35,7 +35,7 @@
     <div id="vPed" hidden>
       <div class="tools tp">
         <select id="pFiltro">
-          <option value="atender">Por atender (pagados)</option><option value="nuevos">Nuevos sin abrir</option><option value="enviado">Enviados</option>
+          <option value="atender">Por atender (pagados)</option><option value="nuevos">Nuevos sin abrir</option><option value="enviado">Enviados / retirados</option>
           <option value="sinpago">Sin pagar / fallidos</option><option value="revisar">Revisar (sin stock)</option><option value="cancelado">Cancelados</option><option value="todos">Todos</option>
         </select>
         <button id="pRef" class="b" type="button">Actualizar</button>
@@ -59,8 +59,10 @@
       <label>Precio (COP)<input id="pPrecio" type="number" min="0" step="1000" required placeholder="80000"><small id="pPrecioF" class="mut"></small></label>
     </div>
     <div class="campo"><span class="et">Tallas</span>
-      <div id="presets" class="chips"></div>
-      <div class="add"><input id="pTallaX" placeholder="Otra talla (ej: 42, Única)" maxlength="8"><button type="button" class="b" id="bTalla">Agregar</button></div>
+      <label>Tipo de talla<select id="pTipoT"><option value="ropa">Ropa</option><option value="gorras">Gorras</option><option value="calzado">Calzado (tallas europeas)</option></select></label>
+      <small id="tAyuda" class="mut"></small>
+      <div id="presets"></div>
+      <div class="add"><input id="pTallaX" placeholder="Otra talla" maxlength="8"><button type="button" class="b" id="bTalla">Agregar</button></div>
       <div id="selT" class="chips sel"></div>
       <small class="mut">Escribe cuántas unidades hay de cada talla. Con <b>0</b> queda <b>agotada</b> (tachada) y no se puede comprar. Toca la × para quitar la talla. Cada venta pagada descuenta el stock sola.</small>
     </div>
@@ -80,6 +82,7 @@
 <script src="../js/datos/tienda.js"></script>
 <script src="../js/datos/menu.js"></script>
 <script src="../js/datos/categorias.js"></script>
+<script src="../js/datos/tallas.js"></script>
 <script src="admin.js"></script>
 <script src="pedidos.js"></script>
 </body>

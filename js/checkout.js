@@ -3,13 +3,13 @@
 const FN = "/.netlify/functions";
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const normTxt = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+const SIN_ENVIO_INTER = "Guía: la pagas al recibir";
 
 // Mismo cálculo que hace el servidor (solo para mostrar el valor en pantalla)
-function calcEnvio(subtotal, depto, ciudad) {
-  if (TIENDA.envioGratis && subtotal > TIENDA.envioGratis) return 0;
-  for (const [k, v] of Object.entries(TIENDA.envioPorCiudad || {})) if (normTxt(k) === normTxt(ciudad)) return Number(v);
-  for (const [k, v] of Object.entries(TIENDA.envioPorDepartamento || {})) if (k === depto) return Number(v);
-  return Number(TIENDA.envioOtras || 0);
+function calcEnvio(subtotal, zona) {
+  const par = Object.entries(TIENDA.envioZonas || {}).find(([k]) => normTxt(k) === normTxt(zona));
+  if (!par) return null;
+  return TIENDA.envioGratis && subtotal > TIENDA.envioGratis ? 0 : Number(par[1]);
 }
 
 const coBox = () => $("#co .co-box");
@@ -30,7 +30,8 @@ function abrirCheckout() {
     return;
   }
   const subtotal = carrito.reduce((a, c) => a + c.precio * c.cant, 0);
-  const deptos = Object.keys(TIENDA.envioPorDepartamento || {});
+  const sedesOk = typeof SEDES !== "undefined" && SEDES.length > 0, tieneGeo = x => typeof x.lat === "number" && typeof x.lng === "number";
+  const zonas = Object.keys(TIENDA.envioZonas || {}).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
   pintarCO(`
     <h2>Finalizar compra</h2>
     <div class="co-res">${carrito.map(c => `<div><span>${c.cant} × ${esc(c.nombre)} <small>(talla ${esc(c.talla)})</small></span><b>${cop(c.precio * c.cant)}</b></div>`).join("")}</div>
@@ -39,13 +40,31 @@ function abrirCheckout() {
       <label>Cédula<input name="cedula" inputmode="numeric" autocomplete="off" required></label>
       <label>Celular<input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required></label>
       <label>Correo<input name="correo" type="email" autocomplete="email" required></label>
-      <label>Departamento<select name="departamento" required><option value="">Selecciona…</option>${deptos.map(d => `<option>${esc(d)}</option>`).join("")}</select></label>
-      <label>Ciudad o municipio<input name="ciudad" autocomplete="address-level2" required></label>
-      <label class="ancho">Dirección de entrega<input name="direccion" autocomplete="street-address" placeholder="Calle, número, barrio, apartamento…" required></label>
-      <label class="ancho">Notas para el envío (opcional)<input name="notas" maxlength="300"></label>
+      <fieldset class="co-ent ancho">
+        <legend>Entrega</legend>
+        ${sedesOk ? `<div class="ent-tog"><label class="on" data-e="envio"><input type="radio" name="entrega" value="envio" checked><span>📦 Envío</span></label><label data-e="retiro"><input type="radio" name="entrega" value="retiro"><span>📍 Retiro</span></label></div>` : `<input type="radio" name="entrega" value="envio" checked hidden>`}
+        <div id="panEnvio">
+      <fieldset class="co-env ancho">
+        <legend>Métodos de envío</legend>
+        <div class="env-box">
+        <label class="env-op on" data-m="zona"><input type="radio" name="metodoEnvio" value="zona" checked><span>${esc(TIENDA.envioZonaTitulo || "Domicilio")}</span><b id="envZonaPrecio">Elige tu zona</b></label>
+        <div class="env-zona" id="envZona"><select name="zona" aria-label="Zona de envío"><option value="">¿De dónde eres? Selecciona tu zona…</option>${zonas.map(z => `<option value="${esc(z)}">${esc(z)} — ${cop(TIENDA.envioZonas[z])}</option>`).join("")}</select></div>
+        <label class="env-op" data-m="inter"><input type="radio" name="metodoEnvio" value="inter"><span>${esc(TIENDA.envioInterTitulo || "Interrapidísimo")}</span><b>Guía al recibir</b></label>
+        <p class="env-nota" id="envInter" hidden>${esc(TIENDA.envioInterNota || "")}</p>
+        </div>
+      </fieldset>
+      <label class="ancho"><span id="dirEt">Dirección de entrega</span><input name="direccion" id="dirIn" autocomplete="street-address" placeholder="Calle, número, barrio, apartamento…" required></label>
+        </div>
+        <div id="panRetiro" hidden>
+          <p class="ret-top"><span>Hay ${SEDES.length} sucursal${SEDES.length === 1 ? "" : "es"} con tu artículo</span>${SEDES.some(tieneGeo) && "geolocation" in navigator ? `<button type="button" id="retCerca">📍 La más cercana</button>` : ""}</p>
+          <p class="ret-msg" id="retMsg" aria-live="polite"></p>
+          <div class="env-box" id="retLista">${(sedesOk ? SEDES : []).map((s, i) => `<label class="env-op ret-op${i ? "" : " on"}" data-i="${i}"><input type="radio" name="sede" value="${esc(s.nombre)}"${i ? "" : " checked"}><div class="ret-in"><div class="ret-n"><b>${esc(s.nombre)}</b><b>GRATIS</b></div><div>${esc(s.direccion)}</div>${s.horario ? `<small>${esc(s.horario)}</small>` : ""}<small>🕐 ${esc(TIENDA.retiroTiempo || "Te avisamos cuando esté listo")}</small></div></label>`).join("")}</div>
+        </div>
+      </fieldset>
+      <label class="ancho">Notas para tu pedido (opcional)<input name="notas" maxlength="300"></label>
       <div class="co-tot ancho">
         <div><span>Subtotal</span><b>${cop(subtotal)}</b></div>
-        <div><span>Envío</span><b id="coEnvio">Elige tu ciudad</b></div>
+        <div><span>Envío</span><b id="coEnvio">Elige tu zona</b></div>
         <div class="gr"><span>Total</span><b id="coTotal">${cop(subtotal)}</b></div>
       </div>
       <label class="co-chk ancho"><input type="checkbox" name="acepto"> <span>Acepto los <a href="#/l/terminos" target="_blank">Términos</a> y autorizo el tratamiento de mis datos según la <a href="#/l/privacidad" target="_blank">Política de privacidad</a>.</span></label>
@@ -53,16 +72,36 @@ function abrirCheckout() {
       <button class="bt n ancho" id="coIr" type="submit">Continuar al pago</button>
     </form>`);
   const f = $("#coForm");
+  const metodo = () => f.metodoEnvio.value, retira = () => f.entrega.value === "retiro";
   const actualizar = () => {
-    if (!f.departamento.value) return;
-    const e = calcEnvio(subtotal, f.departamento.value, f.ciudad.value);
-    $("#coEnvio").textContent = e ? cop(e) : "¡Gratis!"; $("#coTotal").textContent = cop(subtotal + e);
+    const ret = retira(), inter = metodo() === "inter", z = calcEnvio(subtotal, f.zona.value), e = ret || inter ? 0 : z;
+    f.querySelectorAll(".ent-tog label").forEach(l => l.classList.toggle("on", l.dataset.e === (ret ? "retiro" : "envio")));
+    f.querySelectorAll(".co-env .env-op").forEach(l => l.classList.toggle("on", l.dataset.m === metodo()));
+    f.querySelectorAll(".ret-op").forEach(l => l.classList.toggle("on", l.querySelector("input").checked));
+    $("#panEnvio").hidden = ret; $("#panRetiro").hidden = !ret;
+    $("#envZona").hidden = inter; $("#envInter").hidden = !inter;
+    $("#dirEt").textContent = inter ? "Ciudad, departamento y dirección de entrega" : "Dirección de entrega";
+    $("#dirIn").placeholder = inter ? "Ej: Bogotá, Cundinamarca. Calle 10 # 5-20 (o sede de Interrapidísimo)" : "Calle, número, barrio, apartamento…";
+    $("#envZonaPrecio").textContent = z === null ? "Elige tu zona" : z ? cop(z) : "¡Gratis!";
+    $("#coEnvio").textContent = ret ? "Retiro en sede: ¡Gratis!" : inter ? SIN_ENVIO_INTER : e === null ? "Elige tu zona" : e ? cop(e) : "¡Gratis!";
+    $("#coTotal").textContent = cop(subtotal + (e || 0));
   };
-  f.departamento.onchange = actualizar; f.ciudad.oninput = actualizar;
+  f.querySelectorAll("input[name=metodoEnvio],input[name=entrega],input[name=sede]").forEach(r => r.onchange = actualizar); f.zona.onchange = actualizar;
+  const cerca = $("#retCerca");
+  if (cerca) cerca.onclick = () => {                         // elige la sede más cercana a la ubicación del cliente
+    const km = (a, b, c, d) => { const r = x => x * Math.PI / 180, h = Math.sin(r(c - a) / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(r(d - b) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
+    cerca.disabled = true; $("#retMsg").textContent = "Buscando tu ubicación…";
+    navigator.geolocation.getCurrentPosition(p => {
+      const o = SEDES.map((s, i) => ({ s, i, d: tieneGeo(s) ? km(p.coords.latitude, p.coords.longitude, s.lat, s.lng) : Infinity })).sort((a, b) => a.d - b.d)[0];
+      const lab = f.querySelector(`.ret-op[data-i="${o.i}"]`); lab.querySelector("input").checked = true; $("#retLista").prepend(lab); actualizar();
+      $("#retMsg").textContent = `La más cercana a ti: ${o.s.nombre} (a ${o.d < 1 ? Math.round(o.d * 1000) + " m" : o.d.toFixed(1).replace(".", ",") + " km"})`; cerca.disabled = false;
+    }, () => { $("#retMsg").textContent = "No pudimos acceder a tu ubicación. Elige una sede de la lista."; cerca.disabled = false; }, { timeout: 9000, maximumAge: 120000 });
+  };
   f.onsubmit = async ev => {
     ev.preventDefault();
     const err = m => { $("#coErr").textContent = m; $("#coIr").disabled = false; $("#coIr").textContent = "Continuar al pago"; };
     const v = Object.fromEntries(new FormData(f)); v.acepto = f.acepto.checked;
+    if (!retira() && metodo() === "zona" && !f.zona.value) return err("Escoge tu zona de envío de la lista, o elige Interrapidísimo si eres de otra ciudad.");
     $("#coErr").textContent = ""; $("#coIr").disabled = true; $("#coIr").textContent = "Creando tu pedido…";
     try {
       const r = await fetch(`${FN}/crear-pedido`, { method: "POST", headers: { "Content-Type": "application/json" },
@@ -78,7 +117,9 @@ function mostrarPago(d) {
   pintarCO(`
     <h2>Tu pedido está listo</h2>
     <p class="co-ok">Pedido <b>${esc(d.ref)}</b></p>
-    <div class="co-tot"><div><span>Productos</span><b>${cop(d.subtotal)}</b></div><div><span>Envío</span><b>${d.envio ? cop(d.envio) : "¡Gratis!"}</b></div><div class="gr"><span>Total a pagar</span><b>${cop(d.total)}</b></div></div>
+    <div class="co-tot"><div><span>Productos</span><b>${cop(d.subtotal)}</b></div><div><span>Envío</span><b>${d.retiro ? "Retiro en sede: ¡Gratis!" : d.inter ? SIN_ENVIO_INTER : d.envio ? cop(d.envio) : "¡Gratis!"}</b></div><div class="gr"><span>Total a pagar</span><b>${cop(d.total)}</b></div></div>
+    ${d.retiro ? `<p class="co-ok">Pagas ahora con Bold y luego recoges tu pedido en <b>${esc(d.sede)}</b>. Te avisamos cuando esté listo.</p>` : ""}
+    ${d.inter ? `<p class="co-ok">Tus productos los pagas ahora con Bold. Solo la <b>guía de envío</b> la pagas a <b>Interrapidísimo</b> cuando reclames tu pedido.</p>` : ""}
     <p>Paga de forma segura con <b>Bold</b>: tarjeta, PSE, Nequi y más.</p>
     <div id="boldBtn" class="co-bold"></div>
     <p class="co-peq">Después de pagar volverás a la tienda y verás la confirmación de tu pedido.</p>`);

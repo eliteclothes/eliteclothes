@@ -3,8 +3,6 @@ const $ = s => document.querySelector(s);
 const U = SUPABASE.url.replace(/\/$/, ""), K = SUPABASE.key;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const cop = n => "$" + Number(n || 0).toLocaleString("es-CO");
-const ORDEN = ["XXS","XS","S","M","L","XL","XXL","XXXL","Única"];
-const PRESETS = [...ORDEN.slice(1, 7), "Única", ...Array.from({ length: 9 }, (_, i) => String(36 + i))];
 let ses = null, prods = [], f = null; // f = estado del formulario abierto
 try { ses = JSON.parse(localStorage.getItem("adm_ses")); } catch (e) {}
 
@@ -77,6 +75,7 @@ function abrir(p) {
   $("#mTit").textContent = p?.id ? "Editar producto" : "Nuevo producto";
   $("#pGrupo").value = p?.grupo || "hombre"; $("#pCat").value = p?.cat || ""; $("#pNombre").value = p?.nombre || ""; $("#pMarca").value = p?.marca || "";
   $("#pPrecio").value = p?.precio ?? ""; $("#pActivo").checked = p?.activo ?? true; $("#pErr").textContent = ""; $("#mGuardar").disabled = false;
+  $("#pTipoT").value = tipoTallaDeCat(p?.cat);
   catList(); precioF(); pintarTallas(); pintarFotos(); $("#modal").hidden = false; $("#pNombre").focus();
 }
 function catList() {
@@ -84,11 +83,15 @@ function catList() {
   $("#dCat").innerHTML = [...c].map(x => `<option value="${esc(x)}">`).join("");
 }
 $("#pGrupo").onchange = catList;
+$("#pCat").oninput = () => { const t = tipoTallaDeCat($("#pCat").value); if (t !== $("#pTipoT").value) { $("#pTipoT").value = t; pintarTallas(); } };   // Gorras -> tallas de gorra, Calzado/Tenis -> tallas europeas
+$("#pTipoT").onchange = pintarTallas;
 const precioF = () => $("#pPrecioF").textContent = $("#pPrecio").value ? cop($("#pPrecio").value) + " COP" : "";
 $("#pPrecio").oninput = precioF;
 function pintarTallas() {
-  $("#presets").innerHTML = PRESETS.map(t => `<button type="button" data-t="${t}" class="${f.tallas.includes(t) ? "on" : ""}">${t}</button>`).join("");
-  f.tallas.sort((a, b) => { const i = ORDEN.indexOf(a), j = ORDEN.indexOf(b); return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || a.localeCompare(b, "es", { numeric: true }); });
+  const tipo = TIPOS_TALLA[$("#pTipoT").value] || TIPOS_TALLA.ropa;
+  $("#tAyuda").textContent = tipo.ayuda; $("#pTallaX").placeholder = "Otra talla" + (tipo.ejemplo ? ` (ej: ${tipo.ejemplo})` : " (ej: Única)");
+  $("#presets").innerHTML = tipo.grupos.map(g => `${g.t ? `<span class="gt">${esc(g.t)}</span>` : ""}<div class="chips">${g.l.map(t => `<button type="button" data-t="${esc(t)}" class="${f.tallas.includes(t) ? "on" : ""}"${g.cm && g.cm[t] ? ` title="${g.cm[t]} cm"` : ""}>${esc(t)}</button>`).join("")}</div>`).join("");
+  f.tallas.sort(ordenTalla);
   $("#selT").innerHTML = f.tallas.length ? f.tallas.map(t => `<span class="${f.stock[t] === 0 ? "ag" : ""}"><b>${esc(t)}</b><input type="number" min="0" step="1" inputmode="numeric" value="${f.stock[t] ?? 0}" data-s="${esc(t)}" aria-label="Unidades talla ${esc(t)}"><i data-q="${esc(t)}" title="Quitar">×</i></span>`).join("") : '<small class="mut">Aún no has elegido tallas.</small>';
 }
 function quitarT(t) { f.tallas = f.tallas.filter(x => x !== t); f.agotadas = f.agotadas.filter(x => x !== t); delete f.stock[t]; }

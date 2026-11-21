@@ -7,7 +7,7 @@ function verCatalogo(g, cat) {
   const base = PRODUCTOS[g], cats = [...(S.cats || []), ...base.map(p => p.cat)].filter(Boolean).reduce((a, c) => a.some(x => mismaCat(x, c)) ? a : [...a, c], []);
   if (cat) cat = cats.find(c => mismaCat(c, cat)) || cat;
   const scope = base.filter(p => !cat || mismaCat(p.cat, cat)), uniq = f => [...new Set(scope.flatMap(f))];
-  const tallas = uniq(p => p.tallas), marcas = uniq(p => [p.marca]);
+  const tallas = uniq(p => p.tallas).sort(ordenTalla), marcas = uniq(p => [p.marca]);
   cs = { g, cat, solo: false, tallas: [], marcas: [], min: "", max: "", orden: "" };
   $("#catalogo").innerHTML = `<div class="cp">
     <div class="mig"><a href="#inicio">Inicio</a> / <a href="#${g}">${S.titulo}</a>${cat ? ` / ${cat}` : ""}</div>

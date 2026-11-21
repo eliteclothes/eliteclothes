@@ -14,7 +14,7 @@ const LEGAL = {
   horario: "[COMPLETAR: ej. lunes a sábado, 10:00 a. m. a 8:00 p. m.]",
   mediosPago: "tarjetas, PSE y los demás medios que se muestren al momento de pagar",
   transportadoras: "[COMPLETAR: ej. Servientrega, Interrapidísimo]",
-  costoEnvio: "[COMPLETAR: ej. entre $13.000 y $30.000 según destino y peso]",
+  costoEnvio: "entre $10.000 y $30.000 en Medellín y el Valle de Aburrá, según tu zona. Fuera de la ciudad enviamos por Interrapidísimo y tus productos los pagas en la página y solo la guía del envío la pagas a Interrapidísimo cuando reclamas tu pedido",
   // ---- POLÍTICAS (valores sugeridos: ajústalos a lo que realmente haces) ----
   tiempoLocal: "el mismo día o al siguiente día hábil",
   tiempoNacional: "de 2 a 5 días hábiles",

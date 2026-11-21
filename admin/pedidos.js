@@ -6,6 +6,9 @@ const FILTROS = {
   sinpago: "estado=in.(pendiente,fallido)", revisar: "estado=eq.revisar", cancelado: "estado=eq.cancelado", todos: ""
 };
 let peds = [], nuevosPrev = null;
+// Pedidos de retiro en sede: se guardan igual ("enviado"), pero en el panel se muestran como "Retirado"
+const esRetiro = p => /^retiro/i.test(p.ciudad || "");
+const estTxt = p => esRetiro(p) && p.estado === "enviado" ? "Retirado" : EST[p.estado];
 const fechaP = s => s ? new Date(s).toLocaleString("es-CO", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "";
 const esNuevo = p => !p.visto && (p.estado === "pagado" || p.estado === "revisar");
 const telWA = t => { const d = String(t || "").replace(/\D/g, ""); return d.length === 10 ? "57" + d : d; };
@@ -32,7 +35,7 @@ function pintarPeds() {
     <div><h3>${esNuevo(p) ? '<span class="nv">NUEVO</span>' : ""}${esc(p.nombre)}</h3>
       <div class="m">${esc(p.ref)} · ${fechaP(p.creado)} · ${esc(p.ciudad)}</div>
       <div class="m">${(p.pedido_items || []).map(i => `${i.cantidad}× ${esc(i.nombre)} (${esc(i.talla)})`).join(", ")}</div></div>
-    <div><div class="tt">${cop(p.total)}</div><span class="est ${p.estado}">${EST[p.estado]}</span></div></div>`).join("")
+    <div><div class="tt">${cop(p.total)}</div><span class="est ${p.estado}">${estTxt(p)}</span></div></div>`).join("")
     : '<p class="mut">No hay pedidos en esta vista.</p>';
 }
 $("#pLista").onclick = e => { const c = e.target.closest(".pd"); if (c) abrirPed(+c.dataset.id); };
@@ -40,26 +43,29 @@ $("#pLista").onclick = e => { const c = e.target.closest(".pd"); if (c) abrirPed
 // ---------- detalle ----------
 function abrirPed(id) {
   const p = peds.find(x => x.id === id); if (!p) return;
-  const items = p.pedido_items || [], msg = p.estado === "enviado"
+  const ret = esRetiro(p), sedeRet = String(p.ciudad || "").replace(/^retiro en sede:\s*/i, "");
+  const items = p.pedido_items || [], msg = ret
+    ? (p.estado === "enviado" ? `Hola ${p.nombre}, gracias por retirar tu pedido ${p.ref} de ${TIENDA.nombre}. ¡Esperamos verte pronto!` : `Hola ${p.nombre}, tu pedido ${p.ref} de ${TIENDA.nombre} ya está listo para retirar en ${sedeRet}.`)
+    : p.estado === "enviado"
     ? `Hola ${p.nombre}, tu pedido ${p.ref} de ${TIENDA.nombre} ya fue enviado.${p.guia ? " Guía: " + p.guia : ""} ¡Gracias por tu compra!`
     : `Hola ${p.nombre}, te escribimos de ${TIENDA.nombre} sobre tu pedido ${p.ref}.`;
   $("#pdBox").dataset.id = id;
   $("#pdBox").innerHTML = `
     <div class="ph"><h2>Pedido ${esc(p.ref)}</h2><button class="x" type="button" data-a="x" aria-label="Cerrar">×</button></div>
-    <p><span class="est ${p.estado}">${EST[p.estado]}</span> <span class="mut">${fechaP(p.creado)}${p.pagado_en ? " · pagado " + fechaP(p.pagado_en) : ""}</span></p>
+    <p><span class="est ${p.estado}">${estTxt(p)}</span> <span class="mut">${fechaP(p.creado)}${p.pagado_en ? " · pagado " + fechaP(p.pagado_en) : ""}</span></p>
     ${p.estado === "revisar" ? '<p class="aviso"><b>Revisar:</b> el pago entró pero ya no había stock suficiente (o el monto no coincidía). Contacta al cliente o devuélvele el dinero desde tu panel de Bold, y luego cancela el pedido aquí.</p>' : ""}
     <dl class="pdx">
       <dt>Cliente</dt><dd>${esc(p.nombre)}</dd><dt>Cédula</dt><dd>${esc(p.cedula)}</dd>
       <dt>Celular</dt><dd>${esc(p.telefono)}</dd><dt>Correo</dt><dd>${esc(p.correo)}</dd>
-      <dt>Enviar a</dt><dd>${esc(p.direccion)}<br>${esc(p.ciudad)}${p.departamento ? ", " + esc(p.departamento) : ""}</dd>
+      <dt>${/^retiro/i.test(p.ciudad) ? "Retira en" : "Enviar a"}</dt><dd>${esc(p.direccion)}<br>${esc(p.ciudad)}${p.departamento ? ", " + esc(p.departamento) : ""}</dd>
       ${p.notas ? `<dt>Notas</dt><dd>${esc(p.notas)}</dd>` : ""}
       ${p.bold_tx ? `<dt>Ref. Bold</dt><dd>${esc(p.bold_tx)}</dd>` : ""}
     </dl>
     ${items.map(i => `<div class="pit">${i.img ? `<img src="${esc(i.img)}" alt="">` : '<div class="ph0"></div>'}<div>${esc(i.nombre)}<br><span class="mut">Talla ${esc(i.talla)} · ${i.cantidad} × ${cop(i.precio)}</span></div><b>${cop(i.precio * i.cantidad)}</b></div>`).join("")}
-    <div class="pt"><div><span>Subtotal</span><b>${cop(p.subtotal)}</b></div><div><span>Envío</span><b>${p.envio ? cop(p.envio) : "Gratis"}</b></div><div class="g"><span>Total</span><b>${cop(p.total)}</b></div></div>
-    <label>Número de guía / transportadora<input id="pdGuia" maxlength="120" value="${esc(p.guia)}" placeholder="Ej: Servientrega 1234567890"></label>
+    <div class="pt"><div><span>Subtotal</span><b>${cop(p.subtotal)}</b></div><div><span>Envío</span><b>${/^retiro/i.test(p.ciudad) ? "Retiro en sede (gratis)" : /^interrap/i.test(p.ciudad) ? "El cliente paga la guía al recibir" : p.envio ? cop(p.envio) : "Gratis"}</b></div><div class="g"><span>Total</span><b>${cop(p.total)}</b></div></div>
+    <label>${ret ? "Nota (opcional)" : "Número de guía / transportadora"}<input id="pdGuia" maxlength="120" value="${esc(p.guia)}" placeholder="${ret ? "Ej: lo retiró su hermano" : "Ej: Servientrega 1234567890"}"></label>
     <div class="pdacc">
-      ${["pagado", "revisar", "enviado"].includes(p.estado) ? `<button class="b n" type="button" data-a="env">${p.estado === "enviado" ? "Guardar guía" : "Marcar como enviado"}</button>` : ""}
+      ${["pagado", "revisar", "enviado"].includes(p.estado) ? `<button class="b n" type="button" data-a="env">${p.estado === "enviado" ? (ret ? "Guardar nota" : "Guardar guía") : (ret ? "Marcar como retirado" : "Marcar como enviado")}</button>` : ""}
       <a class="b" target="_blank" rel="noopener" href="https://wa.me/${telWA(p.telefono)}?text=${encodeURIComponent(msg)}">Escribir por WhatsApp</a>
       ${["pendiente", "fallido"].includes(p.estado) ? '<button class="b" type="button" data-a="ver">Verificar pago con Bold</button>' : ""}
       ${p.estado !== "cancelado" ? '<button class="b del" type="button" data-a="dev">Cancelar pedido</button>' : ""}
@@ -81,7 +87,7 @@ $("#mPed").onclick = async e => {
     if (a === "env") {
       const g = $("#pdGuia").value.trim(), cuerpo = p.estado === "enviado" ? { guia: g } : { estado: "enviado", guia: g, enviado_en: new Date().toISOString() };
       await api(`/rest/v1/pedidos?id=eq.${id}`, { method: "PATCH", json: cuerpo });
-      toast(p.estado === "enviado" ? "Guía guardada" : "Pedido marcado como enviado"); await recargarUno(id);
+      toast(p.estado === "enviado" ? (esRetiro(p) ? "Nota guardada" : "Guía guardada") : esRetiro(p) ? "Pedido marcado como retirado" : "Pedido marcado como enviado"); await recargarUno(id);
     }
     if (a === "ver") {
       const r = await fetch(`/.netlify/functions/estado-pedido?ref=${encodeURIComponent(p.ref)}`).then(x => x.json());

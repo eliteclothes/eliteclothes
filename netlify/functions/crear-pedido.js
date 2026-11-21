@@ -1,6 +1,6 @@
 // Crea el pedido (con precios y stock REALES de la base de datos) y devuelve lo que necesita el botón de Bold.
 const crypto = require("crypto");
-const { env, json, origen, sb, tienda, costoEnvio, hashIntegridad } = require("./_lib");
+const { env, json, origen, sb, tienda, sedes, resolverEnvio, INTER, hashIntegridad } = require("./_lib");
 
 const DIVISA = "COP";
 const limpiar = (s, n) => String(s == null ? "" : s).replace(/\s+/g, " ").trim().slice(0, n);
@@ -16,16 +16,22 @@ exports.handler = async event => {
     const c = {
       nombre: limpiar(d.nombre, 80), cedula: String(d.cedula || "").replace(/\D/g, "").slice(0, 15),
       telefono: String(d.telefono || "").replace(/\D/g, "").slice(0, 15), correo: limpiar(d.correo, 120).toLowerCase(),
-      departamento: limpiar(d.departamento, 40), ciudad: limpiar(d.ciudad, 60), direccion: limpiar(d.direccion, 160), notas: limpiar(d.notas, 300)
+      direccion: limpiar(d.direccion, 160), notas: limpiar(d.notas, 300)
     };
     if (c.nombre.length < 3) return json(400, { error: "Escribe tu nombre completo." });
     if (c.cedula.length < 5) return json(400, { error: "Escribe tu número de cédula (solo números)." });
     if (c.telefono.length < 7) return json(400, { error: "Escribe un teléfono válido." });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.correo)) return json(400, { error: "Escribe un correo válido." });
-    const deps = Object.keys(T.envioPorDepartamento || {});
-    if (deps.length && !deps.includes(c.departamento)) return json(400, { error: "Escoge tu departamento de la lista." });
-    if (c.ciudad.length < 2) return json(400, { error: "Escribe tu ciudad." });
-    if (c.direccion.length < 5) return json(400, { error: "Escribe tu dirección completa." });
+    const retiro = d.entrega === "retiro";
+    let sede = null;
+    if (retiro) {
+      sede = (await sedes()).find(s => s.nombre === limpiar(d.sede, 80));
+      if (!sede) return json(400, { error: "Escoge la sede donde vas a recoger tu pedido." });
+      c.direccion = limpiar(`${sede.nombre} - ${sede.direccion}`, 160);
+    }
+    const metodo = d.metodoEnvio === "inter" ? "inter" : "zona", zonaElegida = limpiar(d.zona, 60);
+    if (!retiro && metodo === "zona" && !zonaElegida) return json(400, { error: "Escoge tu zona de envío de la lista o elige Interrapidísimo." });
+    if (c.direccion.length < 5) return json(400, { error: metodo === "inter" ? "Escribe tu ciudad, departamento y dirección de entrega." : "Escribe tu dirección completa." });
     if (d.acepto !== true) return json(400, { error: "Debes aceptar la política de datos y los términos para continuar." });
 
     // 2) Productos del carrito (se juntan los repetidos)
@@ -56,8 +62,12 @@ exports.handler = async event => {
     }
 
     const subtotal = lineas.reduce((a, l) => a + l.precio * l.cant, 0);
-    const envio = costoEnvio(T, subtotal, c.departamento, c.ciudad);
-    const total = subtotal + envio;
+    const r = retiro ? { retiro: true, inter: false, costo: 0 } : resolverEnvio(T, subtotal, metodo, zonaElegida);
+    if (!r) return json(400, { error: "Esa zona de envío no existe. Escógela de la lista." });
+    const envio = r.costo, total = subtotal + envio;
+    // Se guarda la zona en "ciudad" (así el panel y el aviso de WhatsApp la muestran sin cambiar la base de datos)
+    c.ciudad = retiro ? "Retiro en sede: " + sede.nombre : r.inter ? INTER + " (guía la paga el cliente al recibir)" : r.zona;
+    c.departamento = retiro || r.inter ? "" : "Antioquia";
     if (total < 1000) return json(400, { error: "El valor mínimo de compra es $1.000." });
 
     // 4) Guardar el pedido como "pendiente"
@@ -75,10 +85,10 @@ exports.handler = async event => {
 
     // 5) Datos para el botón de Bold (la firma se calcula aquí, con la llave secreta)
     return json(200, {
-      ref, subtotal, envio, total, divisa: DIVISA, hash: hashIntegridad(ref, total, DIVISA), apiKey: env("BOLD_API_KEY"),
+      ref, subtotal, envio, inter: r.inter, retiro: !!retiro, sede: sede ? sede.nombre : "", total, divisa: DIVISA, hash: hashIntegridad(ref, total, DIVISA), apiKey: env("BOLD_API_KEY"),
       descripcion: `Pedido ${ref} - ${T.nombre}`.slice(0, 100), redirigir: origen() + "/pedido.html", volver: origen() + "/",
       cliente: { email: c.correo, fullName: c.nombre, phone: c.telefono, dialCode: "+57", documentNumber: c.cedula, documentType: "CC" },
-      direccion: { address: c.direccion, city: c.ciudad, state: c.departamento, country: "CO" }
+      direccion: retiro || r.inter ? { address: c.direccion, country: "CO" } : { address: c.direccion, city: c.ciudad, state: c.departamento, country: "CO" }
     });
   } catch (e) {
     console.error("crear-pedido:", e);

@@ -24,4 +24,33 @@
 .co-bold{display:flex;justify-content:center;margin:16px 0 8px;min-height:60px}
 .co-peq{font-size:12px;color:var(--suave);text-align:center;margin:8px 0 0}
 #coIr{max-width:none;margin:4px 0 0}#coIr:disabled{opacity:.6;cursor:wait}
+/* MÉTODOS DE ENVÍO (lista de opciones con precio a la derecha, como en Shopify) */
+.co-env{grid-column:1/-1;margin:4px 0 2px;padding:0;border:0;min-width:0}
+.co-env legend{padding:0;margin:0 0 10px;font:500 22px var(--titulos);color:var(--tinta)}
+.env-box{border:1px solid #0003;border-radius:10px;overflow:hidden;background:#fff}
+.co-form .env-op{flex-direction:row;align-items:center;gap:12px;padding:15px 16px;margin:0;border-top:1px solid #0002;background:#fff;color:var(--tinta);font-size:15px;cursor:pointer}
+.env-box>:first-child{border-top:0!important}
+.env-op span{flex:1}.env-op b{font-weight:500;white-space:nowrap}
+.co-form .env-op input[type=radio]{width:18px;height:18px;margin:0;padding:0;border:0;accent-color:#1456d6;flex:none}
+.co-form .env-op.on{background:#f0f5ff;box-shadow:inset 0 0 0 2px #1456d6}
+.env-zona{padding:0 16px 14px;background:#f0f5ff;box-shadow:inset 2px 0 0 #1456d6,inset -2px 0 0 #1456d6}
+.env-zona select{width:100%}
+.env-nota{margin:0;padding:12px 16px 14px;background:#f0f5ff;box-shadow:inset 2px 0 0 #1456d6,inset -2px 0 0 #1456d6,inset 0 -2px 0 #1456d6;font-size:13px;line-height:1.45;color:var(--tinta)}
+/* ENTREGA: Envío | Retiro (control de dos opciones) y lista de sedes */
+.co-ent{grid-column:1/-1;margin:4px 0 2px;padding:0;border:0;min-width:0}
+.co-ent legend{padding:0;margin:0 0 10px;font:500 22px var(--titulos);color:var(--tinta)}
+.ent-tog{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px;margin-bottom:16px;background:#f1f1f1;border-radius:14px}
+.co-form .ent-tog label{flex-direction:row;justify-content:center;align-items:center;padding:14px 8px;border-radius:10px;color:var(--tinta);font:500 16px var(--cuerpo);cursor:pointer}
+.ent-tog label.on{background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+.ent-tog input{position:absolute;opacity:0;pointer-events:none}
+#panEnvio{display:grid;gap:12px 14px}#panEnvio[hidden],#panRetiro[hidden]{display:none}
+.ret-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px;color:var(--suave);font-size:14px}
+.ret-top button{border:0;background:none;color:#1456d6;font:inherit;font-size:14px;cursor:pointer}.ret-top button:disabled{opacity:.6}
+.ret-msg{margin:0 0 10px;font-size:13px;color:var(--tinta)}.ret-msg:empty{display:none}
+.co-form .ret-op{align-items:flex-start}
+.ret-op input{margin-top:3px!important}
+.ret-in{flex:1;display:flex;flex-direction:column;gap:3px;font-size:15px}
+.ret-n{display:flex;justify-content:space-between;gap:10px;font-size:15px}.ret-n b{font-weight:600}
+.ret-in small{font-size:13px;color:var(--suave)}
 @media(max-width:560px){.co{padding:10px}.co-box{padding:24px 18px 20px}.co-box h2{font-size:27px}.co-form{grid-template-columns:1fr}}
+

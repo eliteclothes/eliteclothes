@@ -18,48 +18,35 @@ const TIENDA = {
   // ---- Página de producto ----
   envioGratis: 500000,                    // compras SUPERIORES a este valor tienen envío gratis (0 = ocultar aviso)
   // ---- COSTO DEL ENVÍO (solo se cobra cuando la compra NO supera envioGratis) ----
-  // El sistema busca, en este orden: 1) la ciudad en envioPorCiudad, 2) el departamento, 3) envioOtras.
-  // IMPORTANTE: los valores de abajo son DE EJEMPLO ($15.000 en todos). Reemplázalos por los de la transportadora del dueño.
-  envioPorDepartamento: {
-    "Amazonas": 15000,
-    "Antioquia": 15000,
-    "Arauca": 15000,
-    "Atlántico": 15000,
-    "Bogotá D.C.": 15000,
-    "Bolívar": 15000,
-    "Boyacá": 15000,
-    "Caldas": 15000,
-    "Caquetá": 15000,
-    "Casanare": 15000,
-    "Cauca": 15000,
-    "Cesar": 15000,
-    "Chocó": 15000,
-    "Córdoba": 15000,
-    "Cundinamarca": 15000,
-    "Guainía": 15000,
-    "Guaviare": 15000,
-    "Huila": 15000,
-    "La Guajira": 15000,
-    "Magdalena": 15000,
-    "Meta": 15000,
-    "Nariño": 15000,
-    "Norte de Santander": 15000,
-    "Putumayo": 15000,
-    "Quindío": 15000,
-    "Risaralda": 15000,
-    "San Andrés y Providencia": 15000,
-    "Santander": 15000,
-    "Sucre": 15000,
-    "Tolima": 15000,
-    "Valle del Cauca": 15000,
-    "Vaupés": 15000,
-    "Vichada": 15000
+  // En el formulario el cliente elige su zona en un menú desplegable (Medellín y Valle de Aburrá).
+  // Si NO es de la zona, elige Interrapidísimo: no se cobra envío en la página, el cliente paga la guía
+  // directamente a Interrapidísimo cuando reclama su pedido.
+  envioZonas: {
+    "Pedregal": 13000,
+    "12 de Octubre": 14000,
+    "Picacho": 15000,
+    "París": 14000,
+    "Cabañas": 10000,
+    "Campo Valdés": 12000,
+    "Bello": 15000,
+    "Niquía": 16000,
+    "Copacabana": 20000,
+    "Girardota": 25000,
+    "Castilla": 14000,
+    "Barrio Antioquia": 17000,
+    "Villa Hermosa": 15000,
+    "Buenos Aires": 16000,
+    "San Javier": 18000,
+    "Laureles": 17000,
+    "Envigado": 20000,
+    "Itagüí": 24000,
+    "Sabaneta": 25000,
+    "La Estrella": 30000
   },
-  envioPorCiudad: {                       // OPCIONAL: ciudades con un valor distinto al de su departamento
-    // "Medellín": 8000,
-    // "Rionegro": 10000
-  },
-  envioOtras: 15000,                      // valor si no se encuentra la ciudad ni el departamento
+  retiroTiempo: "Normalmente está listo en 1 hora",   // texto bajo cada sede en la opción "Retiro" (las sedes están en js/datos/sedes.js)
+  envioZonaTitulo: "Domicilio en Medellín y Valle de Aburrá",
+  envioInterTitulo: "Interrapidísimo (fuera de Medellín)",
+  envioInterNota: "Pagas tus productos aquí en la página. Solo la guía del envío la pagas a Interrapidísimo cuando reclames tu pedido.",
   retiro: "cualquiera de nuestras sedes",             // lugar de retiro ("" = ocultar)
   pagos: ["visa", "mastercard", "pse", "bancolombia", "contraentrega"], // medios que SÍ aceptas (borra los que no).
                                           // Claves: visa, mastercard, pse, bancolombia, addi, nequi, contraentrega  |  o una ruta: "img/pagos/otro.png"
