@@ -29,9 +29,12 @@ exports.handler = async event => {
       if (!sede) return json(400, { error: "Escoge la sede donde vas a recoger tu pedido." });
       c.direccion = limpiar(`${sede.nombre} - ${sede.direccion}`, 160);
     }
-    const metodo = d.metodoEnvio === "inter" ? "inter" : "zona", zonaElegida = limpiar(d.zona, 60);
-    if (!retiro && metodo === "zona" && !zonaElegida) return json(400, { error: "Escoge tu zona de envío de la lista o elige Interrapidísimo." });
-    if (c.direccion.length < 5) return json(400, { error: metodo === "inter" ? "Escribe tu ciudad, departamento y dirección de entrega." : "Escribe tu dirección completa." });
+    const zonaElegida = limpiar(d.zona, 60);
+    // Si el cliente NO es de una zona del Valle de Aburrá (no eligió zona, o eligió "otra"), el pedido sigue por Interrapidísimo con la dirección que escribió
+    // "__medellin" = es de Medellín pero su sector no está en la lista: escribe su dirección y la tienda le confirma el domicilio
+    const metodo = d.metodoEnvio === "inter" || !zonaElegida || zonaElegida === "__otra" ? "inter" : zonaElegida === "__medellin" ? "sector" : "zona";
+    const largo = !retiro && metodo !== "zona";
+    if (c.direccion.length < (largo ? 10 : 5)) return json(400, { error: metodo === "sector" && !retiro ? "Escribe tu dirección completa en Medellín (calle, número y barrio)." : largo ? "Escribe tu ciudad, departamento y dirección de entrega." : "Escribe tu dirección completa." });
     if (d.acepto !== true) return json(400, { error: "Debes aceptar la política de datos y los términos para continuar." });
 
     // 2) Productos del carrito (se juntan los repetidos)
@@ -66,7 +69,7 @@ exports.handler = async event => {
     if (!r) return json(400, { error: "Esa zona de envío no existe. Escógela de la lista." });
     const envio = r.costo, total = subtotal + envio;
     // Se guarda la zona en "ciudad" (así el panel y el aviso de WhatsApp la muestran sin cambiar la base de datos)
-    c.ciudad = retiro ? "Retiro en sede: " + sede.nombre : r.inter ? INTER + " (guía la paga el cliente al recibir)" : r.zona;
+    c.ciudad = retiro ? "Retiro en sede: " + sede.nombre : r.inter ? INTER + " (guía la paga el cliente al recibir)" : r.sector ? (r.gratis ? "Medellín - otro sector (envío gratis)" : "Medellín - domicilio por confirmar") : r.zona;
     c.departamento = retiro || r.inter ? "" : "Antioquia";
     if (total < 1000) return json(400, { error: "El valor mínimo de compra es $1.000." });
 
@@ -85,10 +88,10 @@ exports.handler = async event => {
 
     // 5) Datos para el botón de Bold (la firma se calcula aquí, con la llave secreta)
     return json(200, {
-      ref, subtotal, envio, inter: r.inter, retiro: !!retiro, sede: sede ? sede.nombre : "", total, divisa: DIVISA, hash: hashIntegridad(ref, total, DIVISA), apiKey: env("BOLD_API_KEY"),
+      ref, subtotal, envio, inter: r.inter, sector: !!r.sector, gratis: !!(T.envioGratis && subtotal > T.envioGratis), retiro: !!retiro, sede: sede ? sede.nombre : "", total, divisa: DIVISA, hash: hashIntegridad(ref, total, DIVISA), apiKey: env("BOLD_API_KEY"),
       descripcion: `Pedido ${ref} - ${T.nombre}`.slice(0, 100), redirigir: origen() + "/pedido.html", volver: origen() + "/",
       cliente: { email: c.correo, fullName: c.nombre, phone: c.telefono, dialCode: "+57", documentNumber: c.cedula, documentType: "CC" },
-      direccion: retiro || r.inter ? { address: c.direccion, country: "CO" } : { address: c.direccion, city: c.ciudad, state: c.departamento, country: "CO" }
+      direccion: retiro || r.inter ? { address: c.direccion, country: "CO" } : { address: c.direccion, city: r.sector ? "Medellín" : c.ciudad, state: c.departamento, country: "CO" }
     });
   } catch (e) {
     console.error("crear-pedido:", e);

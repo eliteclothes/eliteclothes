@@ -3,18 +3,18 @@
    2) Los valores sin [COMPLETAR] (tiempos, plazos, costos) son SUGERIDOS: cámbialos por los de tu operación real.
    3) Cada página tiene "resumen" (la cajita "En corto") y "secciones" (las tarjetas). Edita el texto con calma, solo lo que está entre comillas/comillas invertidas. */
 const LEGAL = {
-  fecha: "6 de noviembre de 2026",
+  fecha: "21 de noviembre de 2026",
   // ---- DATOS DEL NEGOCIO Y PERSONALES (los llenas tú) ----
-  razonSocial: "[COMPLETAR: nombre completo o razón social del titular]",
-  nit: "[COMPLETAR: NIT o cédula]",
-  ciudad: "[COMPLETAR: ciudad y departamento]",
-  direccion: "[COMPLETAR: dirección, o escribe: Venta exclusivamente en línea]",
-  direccionCambios: "[COMPLETAR: dirección a la que se envían cambios y devoluciones]",
-  correo: "[COMPLETAR: correo de contacto]",
-  horario: "[COMPLETAR: ej. lunes a sábado, 10:00 a. m. a 8:00 p. m.]",
+  razonSocial: "Sebastian Correa García",
+  nit: "1001640077",
+  ciudad: "Medellín, Antioquia, Colombia",
+  direccion: "Cl. 108 #80-25, Medellín, Antioquia, Colombia - Cl. 20E #43-12, Bello, Antioquia, Colombia",
+  direccionCambios: "Cl. 20E #43-12, Bello, Antioquia, Colombia",
+  correo: "clotheselite13@gmail.com",
+  horario: "Lunes a Sábado, 11:00 a.m - 9:00 p.m. Domingos, 11:00 a.m - 8:00 p.m",
   mediosPago: "tarjetas, PSE y los demás medios que se muestren al momento de pagar",
-  transportadoras: "[COMPLETAR: ej. Servientrega, Interrapidísimo]",
-  costoEnvio: "entre $10.000 y $30.000 en Medellín y el Valle de Aburrá, según tu zona. Fuera de la ciudad enviamos por Interrapidísimo y tus productos los pagas en la página y solo la guía del envío la pagas a Interrapidísimo cuando reclamas tu pedido",
+  transportadoras: "INTERRAPIDÍSIMO",
+  costoEnvio: "entre $10.000 y $30.000 en Medellín y el Valle de Aburrá, según tu zona. Si eres de Medellín y tu sector no aparece en la lista, escribes tu dirección al comprar y te confirmamos el valor del domicilio. Fuera de la ciudad enviamos por Interrapidísimo y tus productos los pagas en la página y solo la guía del envío la pagas a Interrapidísimo cuando reclamas tu pedido",
   // ---- POLÍTICAS (valores sugeridos: ajústalos a lo que realmente haces) ----
   tiempoLocal: "el mismo día o al siguiente día hábil",
   tiempoNacional: "de 2 a 5 días hábiles",
@@ -55,7 +55,7 @@ const LEGAL_PAGINAS = {
     secciones: () => [
     ["Quién es el responsable", _p(`${_titular()}. Dirección: ${_v("direccion")}. ${_contacto()}.`, `Esta política cumple la Ley 1581 de 2012 (protección de datos personales), el Decreto 1377 de 2013 y las normas que los desarrollan.`)],
     ["Principios que seguimos", _ul(["<b>Finalidad:</b> usamos tus datos solo para lo que te contamos aquí.", "<b>Libertad:</b> los tratamos con tu autorización.", "<b>Veracidad y transparencia:</b> te decimos qué hacemos con ellos y puedes preguntarnos en cualquier momento.", "<b>Seguridad y confidencialidad:</b> solo accede quien lo necesita para atenderte."])],
-    ["Qué datos tratamos", _ul([`<b>Los que nos das al comprar</b>: nombre, número de documento, teléfono, correo, departamento, ciudad, dirección de entrega, notas del pedido y el detalle de lo que compras.`, `<b>Los que nos das por WhatsApp</b> al hacer una consulta.`, `<b>Datos técnicos básicos</b> (IP, navegador, fecha y hora de visita) que registran los servicios que hacen funcionar el sitio.`, `<b>Tu carrito</b>, que se guarda solo en tu navegador hasta que finalizas la compra.`, `<b>Tu ubicación</b>, solo si usas el botón "Encontrar la sede más cercana" del mapa: se calcula en tu dispositivo y no la guardamos ni la enviamos.`]) + _p(`No pedimos datos sensibles (salud, origen étnico, orientación sexual, etc.) ni guardamos datos de tarjetas: los gestiona Bold. El sitio no está dirigido a menores: si eres menor de 18, pide a un adulto que haga el pedido por ti.`)],
+    ["Qué datos tratamos", _ul([`<b>Los que nos das al comprar</b>: nombre, número de documento, teléfono, correo, zona o ciudad y dirección de entrega, notas del pedido y el detalle de lo que compras.`, `<b>Los que nos das por WhatsApp</b> al hacer una consulta.`, `<b>Datos técnicos básicos</b> (IP, navegador, fecha y hora de visita) que registran los servicios que hacen funcionar el sitio.`, `<b>Tu carrito</b>, que se guarda solo en tu navegador hasta que finalizas la compra.`, `<b>Tu ubicación</b>, solo si usas el botón "Encontrar la sede más cercana" del mapa: se calcula en tu dispositivo y no la guardamos ni la enviamos.`]) + _p(`No pedimos datos sensibles (salud, origen étnico, orientación sexual, etc.) ni guardamos datos de tarjetas: los gestiona Bold. El sitio no está dirigido a menores: si eres menor de 18, pide a un adulto que haga el pedido por ti.`)],
     ["Para qué los usamos", _ul(["Confirmar, cobrar, empacar y enviar tu pedido.", "Atender consultas, cambios, devoluciones, garantías y reclamos.", "Cumplir obligaciones legales, contables y tributarias (por ejemplo, facturación).", "Mejorar el sitio y la atención.", "Escribirte con promociones o novedades <b>solo si lo autorizas</b>; puedes decirnos que pares cuando quieras."])],
     ["Tu autorización", _p(`Al escribirnos por WhatsApp para pedir y darnos tus datos, nos autorizas a tratarlos para esas finalidades. Puedes revocar la autorización o pedir que eliminemos tus datos, salvo que la ley o un contrato nos obliguen a conservarlos.`)],
     ["Con quién compartimos tus datos", _p(`No vendemos tus datos. Solo los compartimos cuando hace falta para prestarte el servicio:`) + _ul([`<b>Transportadoras</b> (${_v("transportadoras")}): nombre, teléfono y dirección para entregarte el pedido.`, `<b>Bold</b> (pasarela de pagos): nombre, documento, correo, teléfono y dirección, para procesar y validar tu pago.`, `<b>WhatsApp (Meta)</b>: canal de atención al cliente.`, `<b>Supabase</b>: aloja el catálogo, los pedidos y el panel interno de la tienda.`, `<b>Netlify</b>: aloja el sitio y ejecuta las funciones que procesan tu pedido.`, `<b>Google Fonts</b>: al abrir el sitio tu navegador descarga las tipografías desde Google, que puede registrar tu IP.`, `<b>Autoridades</b>, cuando la ley lo exija.`]) + _p(`Algunos de estos proveedores pueden procesar datos fuera de Colombia (transmisión o transferencia internacional); lo hacemos solo con proveedores que ofrecen medidas de seguridad adecuadas.`)],

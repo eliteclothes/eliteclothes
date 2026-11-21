@@ -4,6 +4,7 @@ const FN = "/.netlify/functions";
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const normTxt = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 const SIN_ENVIO_INTER = "Guía: la pagas al recibir";
+const POR_CONFIRMAR = "Te lo confirmamos por WhatsApp";
 
 // Mismo cálculo que hace el servidor (solo para mostrar el valor en pantalla)
 function calcEnvio(subtotal, zona) {
@@ -48,9 +49,10 @@ function abrirCheckout() {
         <legend>Métodos de envío</legend>
         <div class="env-box">
         <label class="env-op on" data-m="zona"><input type="radio" name="metodoEnvio" value="zona" checked><span>${esc(TIENDA.envioZonaTitulo || "Domicilio")}</span><b id="envZonaPrecio">Elige tu zona</b></label>
-        <div class="env-zona" id="envZona"><select name="zona" aria-label="Zona de envío"><option value="">¿De dónde eres? Selecciona tu zona…</option>${zonas.map(z => `<option value="${esc(z)}">${esc(z)} — ${cop(TIENDA.envioZonas[z])}</option>`).join("")}</select></div>
+        <div class="env-zona" id="envZona"><select name="zona" aria-label="Zona de envío"><option value="">¿De dónde eres? Selecciona tu zona…</option>${zonas.map(z => `<option value="${esc(z)}">${esc(z)} — ${cop(TIENDA.envioZonas[z])}</option>`).join("")}<option value="__medellin">Soy de Medellín pero mi sector no aparece → escribo mi dirección</option><option value="__otra">Soy de otra ciudad → Interrapidísimo</option></select></div>
         <label class="env-op" data-m="inter"><input type="radio" name="metodoEnvio" value="inter"><span>${esc(TIENDA.envioInterTitulo || "Interrapidísimo")}</span><b>Guía al recibir</b></label>
         <p class="env-nota" id="envInter" hidden>${esc(TIENDA.envioInterNota || "")}</p>
+        <p class="env-nota" id="envSector" hidden>📍 Escribe abajo tu dirección completa (calle, número, barrio y sector). La tienda te escribirá para decirte el valor del domicilio.</p>
         </div>
       </fieldset>
       <label class="ancho"><span id="dirEt">Dirección de entrega</span><input name="direccion" id="dirIn" autocomplete="street-address" placeholder="Calle, número, barrio, apartamento…" required></label>
@@ -74,19 +76,21 @@ function abrirCheckout() {
   const f = $("#coForm");
   const metodo = () => f.metodoEnvio.value, retira = () => f.entrega.value === "retiro";
   const actualizar = () => {
-    const ret = retira(), inter = metodo() === "inter", z = calcEnvio(subtotal, f.zona.value), e = ret || inter ? 0 : z;
+    const ret = retira(), inter = metodo() === "inter", otro = !ret && !inter && f.zona.value === "__medellin", z = otro ? null : calcEnvio(subtotal, f.zona.value), e = ret || inter || otro ? 0 : z;
+    const gratis = !!(TIENDA.envioGratis && subtotal > TIENDA.envioGratis), sectorTxt = gratis ? "¡Gratis!" : POR_CONFIRMAR;
     f.querySelectorAll(".ent-tog label").forEach(l => l.classList.toggle("on", l.dataset.e === (ret ? "retiro" : "envio")));
     f.querySelectorAll(".co-env .env-op").forEach(l => l.classList.toggle("on", l.dataset.m === metodo()));
     f.querySelectorAll(".ret-op").forEach(l => l.classList.toggle("on", l.querySelector("input").checked));
     $("#panEnvio").hidden = ret; $("#panRetiro").hidden = !ret;
-    $("#envZona").hidden = inter; $("#envInter").hidden = !inter;
-    $("#dirEt").textContent = inter ? "Ciudad, departamento y dirección de entrega" : "Dirección de entrega";
-    $("#dirIn").placeholder = inter ? "Ej: Bogotá, Cundinamarca. Calle 10 # 5-20 (o sede de Interrapidísimo)" : "Calle, número, barrio, apartamento…";
-    $("#envZonaPrecio").textContent = z === null ? "Elige tu zona" : z ? cop(z) : "¡Gratis!";
-    $("#coEnvio").textContent = ret ? "Retiro en sede: ¡Gratis!" : inter ? SIN_ENVIO_INTER : e === null ? "Elige tu zona" : e ? cop(e) : "¡Gratis!";
+    $("#envZona").hidden = inter; $("#envInter").hidden = !inter; $("#envSector").hidden = !otro;
+    $("#dirEt").textContent = inter ? "Ciudad, departamento y dirección de entrega" : otro ? "Tu dirección en Medellín (con barrio y sector)" : "Dirección de entrega";
+    $("#dirIn").placeholder = inter ? "Ej: Bogotá, Cundinamarca. Calle 10 # 5-20 (o sede de Interrapidísimo)" : otro ? "Ej: Cra 45 # 80-12, barrio Aranjuez, sector…, apto 301" : "Calle, número, barrio, apartamento…";
+    $("#envZonaPrecio").textContent = otro ? sectorTxt : z === null ? "Elige tu zona" : z ? cop(z) : "¡Gratis!";
+    $("#coEnvio").textContent = ret ? "Retiro en sede: ¡Gratis!" : inter ? SIN_ENVIO_INTER : otro ? sectorTxt : e === null ? "Elige tu zona" : e ? cop(e) : "¡Gratis!";
     $("#coTotal").textContent = cop(subtotal + (e || 0));
   };
-  f.querySelectorAll("input[name=metodoEnvio],input[name=entrega],input[name=sede]").forEach(r => r.onchange = actualizar); f.zona.onchange = actualizar;
+  f.querySelectorAll("input[name=metodoEnvio],input[name=entrega],input[name=sede]").forEach(r => r.onchange = actualizar);
+  f.zona.onchange = () => { if (f.zona.value === "__otra") { f.metodoEnvio.value = "inter"; f.zona.value = ""; } actualizar(); };   // "soy de otra ciudad" = Interrapidísimo; "__medellin" se queda: dirección escrita y la tienda confirma el domicilio
   const cerca = $("#retCerca");
   if (cerca) cerca.onclick = () => {                         // elige la sede más cercana a la ubicación del cliente
     const km = (a, b, c, d) => { const r = x => x * Math.PI / 180, h = Math.sin(r(c - a) / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(r(d - b) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
@@ -101,7 +105,11 @@ function abrirCheckout() {
     ev.preventDefault();
     const err = m => { $("#coErr").textContent = m; $("#coIr").disabled = false; $("#coIr").textContent = "Continuar al pago"; };
     const v = Object.fromEntries(new FormData(f)); v.acepto = f.acepto.checked;
-    if (!retira() && metodo() === "zona" && !f.zona.value) return err("Escoge tu zona de envío de la lista, o elige Interrapidísimo si eres de otra ciudad.");
+    if (!retira() && metodo() === "zona" && !f.zona.value) {      // no es de una zona de Medellín: sigue con Interrapidísimo y la dirección que escriba
+      f.metodoEnvio.value = "inter"; actualizar(); $("#dirIn").focus();
+      return err("No elegiste una zona de Medellín, así que tu envío será por Interrapidísimo (solo pagas la guía al recibir). Escribe abajo tu ciudad, departamento y dirección, y toca Continuar al pago.");
+    }
+    if (!retira() && metodo() === "zona" && f.zona.value === "__medellin" && v.direccion.trim().length < 10) { $("#dirIn").focus(); return err("Escribe tu dirección completa en Medellín (calle, número y barrio) para que la tienda pueda calcular tu domicilio."); }
     $("#coErr").textContent = ""; $("#coIr").disabled = true; $("#coIr").textContent = "Creando tu pedido…";
     try {
       const r = await fetch(`${FN}/crear-pedido`, { method: "POST", headers: { "Content-Type": "application/json" },
@@ -117,8 +125,9 @@ function mostrarPago(d) {
   pintarCO(`
     <h2>Tu pedido está listo</h2>
     <p class="co-ok">Pedido <b>${esc(d.ref)}</b></p>
-    <div class="co-tot"><div><span>Productos</span><b>${cop(d.subtotal)}</b></div><div><span>Envío</span><b>${d.retiro ? "Retiro en sede: ¡Gratis!" : d.inter ? SIN_ENVIO_INTER : d.envio ? cop(d.envio) : "¡Gratis!"}</b></div><div class="gr"><span>Total a pagar</span><b>${cop(d.total)}</b></div></div>
+    <div class="co-tot"><div><span>Productos</span><b>${cop(d.subtotal)}</b></div><div><span>Envío</span><b>${d.retiro ? "Retiro en sede: ¡Gratis!" : d.inter ? SIN_ENVIO_INTER : d.sector && !d.envio && !d.gratis ? POR_CONFIRMAR : d.envio ? cop(d.envio) : "¡Gratis!"}</b></div><div class="gr"><span>Total a pagar</span><b>${cop(d.total)}</b></div></div>
     ${d.retiro ? `<p class="co-ok">Pagas ahora con Bold y luego recoges tu pedido en <b>${esc(d.sede)}</b>. Te avisamos cuando esté listo.</p>` : ""}
+    ${d.sector && !d.gratis ? `<p class="co-ok">Pagas ahora tus productos con Bold. Como tu sector no está en la lista, la tienda te escribirá por WhatsApp o llamada al <b>${esc(d.cliente.phone)}</b> para decirte el <b>valor del domicilio</b>.</p>` : ""}
     ${d.inter ? `<p class="co-ok">Tus productos los pagas ahora con Bold. Solo la <b>guía de envío</b> la pagas a <b>Interrapidísimo</b> cuando reclames tu pedido.</p>` : ""}
     <p>Paga de forma segura con <b>Bold</b>: tarjeta, PSE, Nequi y más.</p>
     <div id="boldBtn" class="co-bold"></div>

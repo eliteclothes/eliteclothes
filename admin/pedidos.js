@@ -62,7 +62,7 @@ function abrirPed(id) {
       ${p.bold_tx ? `<dt>Ref. Bold</dt><dd>${esc(p.bold_tx)}</dd>` : ""}
     </dl>
     ${items.map(i => `<div class="pit">${i.img ? `<img src="${esc(i.img)}" alt="">` : '<div class="ph0"></div>'}<div>${esc(i.nombre)}<br><span class="mut">Talla ${esc(i.talla)} · ${i.cantidad} × ${cop(i.precio)}</span></div><b>${cop(i.precio * i.cantidad)}</b></div>`).join("")}
-    <div class="pt"><div><span>Subtotal</span><b>${cop(p.subtotal)}</b></div><div><span>Envío</span><b>${/^retiro/i.test(p.ciudad) ? "Retiro en sede (gratis)" : /^interrap/i.test(p.ciudad) ? "El cliente paga la guía al recibir" : p.envio ? cop(p.envio) : "Gratis"}</b></div><div class="g"><span>Total</span><b>${cop(p.total)}</b></div></div>
+    <div class="pt"><div><span>Subtotal</span><b>${cop(p.subtotal)}</b></div><div><span>Envío</span><b>${/^retiro/i.test(p.ciudad) ? "Retiro en sede (gratis)" : /^interrap/i.test(p.ciudad) ? "El cliente paga la guía al recibir" : /por confirmar/i.test(p.ciudad) ? "Por confirmar: escríbele al cliente el valor del domicilio" : p.envio ? cop(p.envio) : "Gratis"}</b></div><div class="g"><span>Total</span><b>${cop(p.total)}</b></div></div>
     <label>${ret ? "Nota (opcional)" : "Número de guía / transportadora"}<input id="pdGuia" maxlength="120" value="${esc(p.guia)}" placeholder="${ret ? "Ej: lo retiró su hermano" : "Ej: Servientrega 1234567890"}"></label>
     <div class="pdacc">
       ${["pagado", "revisar", "enviado"].includes(p.estado) ? `<button class="b n" type="button" data-a="env">${p.estado === "enviado" ? (ret ? "Guardar nota" : "Guardar guía") : (ret ? "Marcar como retirado" : "Marcar como enviado")}</button>` : ""}
