@@ -41,3 +41,20 @@
 .pgi[data-k="pse"]{padding:0}.pgi[data-k="pse"] img{width:100%;height:100%;object-fit:cover}
 .pgi[data-k="contraentrega"]{width:98px;padding:0;background:#01bafa;border-color:#01bafa}.pgi[data-k="contraentrega"] img{width:100%;height:100%;object-fit:cover}
 .pgi[data-k="bancolombia"]{padding:4px}
+
+/* Visor de fotos con zoom */
+.gal img{cursor:zoom-in}
+.visor{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:rgba(10,10,12,.94);animation:vIn .2s ease}
+@keyframes vIn{from{opacity:0}to{opacity:1}}
+.vc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.vc img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-select:none;transform-origin:center;will-change:transform;touch-action:none}
+.visor.zoom .vc img{cursor:grab}.visor.zoom .vc img:active{cursor:grabbing}
+.vx,.vf{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:24px;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:background .2s}
+.vx:hover,.vf:hover{background:rgba(255,255,255,.28)}
+.vx{top:16px;right:16px;font-size:20px}
+.vf{top:50%;transform:translateY(-50%);font-size:32px;padding-bottom:4px}.vp{left:14px}.vs{right:14px}
+.vn,.vh{position:absolute;z-index:2;left:0;right:0;text-align:center;color:#fff;font-size:12px;letter-spacing:1.5px;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.vn{top:26px}.vh{bottom:18px;opacity:.75;letter-spacing:.8px}
+.visor.zoom .vh{display:none}
+@media(max-width:600px){.vf{width:40px;height:40px;font-size:28px}.vp{left:8px}.vs{right:8px}}
+@media(prefers-reduced-motion:reduce){.visor{animation:none}}
