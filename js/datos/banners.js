@@ -10,7 +10,7 @@
 //     "20% center"     -> más hacia la izquierda;  "80% center" -> más hacia la derecha
 //   Si no pones pos, se usa el centro.
 const BANNERS = [
-  { img: "img/banner1.jpg", pos: "center center", titulo: "Gorras y fragancias",   texto: "Los detalles que completan tu look", boton: "Explorar", href: "#hombre/Gorras" },
   { img: "img/navidad.jpg", pos: "center center", titulo: "Visítanos en tienda",   texto: "Prueba, elige y llévate tu estilo",  boton: "Cómo llegar", href: "#sedes" },
+  { img: "img/banner1.jpg", pos: "center center", titulo: "Gorras y fragancias",   texto: "Los detalles que completan tu look", boton: "Explorar", href: "#hombre/Gorras" },
   { img: "img/banner3.jpg", pos: "center center", titulo: "Estilo a tu medida",    texto: "Prendas seleccionadas una a una",    boton: "Ver colección", href: "#hombre" }
 ];
