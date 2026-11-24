@@ -26,7 +26,11 @@ async function api(ruta, op = {}) {
   if (!r.ok) { let m = r.status; try { const d = await r.json(); m = d.message || d.error || m; } catch (e) {} throw new Error(m); }
   return r.status === 204 ? null : r.json().catch(() => null);
 }
-const rutaFoto = url => (url.split("/object/public/fotos/")[1] || "");
+// Encuadre de las fotos de productos: la posición se guarda al final del enlace, como "…foto.webp#p=50,20" (x,y en %).
+// Sin "#p=" la foto se centra. fotoSrc() devuelve el enlace limpio y fotoPos() la posición lista para CSS.
+const fotoSrc = s => String(s || "").split("#p=")[0];
+const fotoPos = s => { const m = String(s || "").match(/#p=(\d{1,3}),(\d{1,3})/); return m ? `${Math.min(100, +m[1])}% ${Math.min(100, +m[2])}%` : "center"; };
+const rutaFoto = url => (url.split("/object/public/fotos/")[1] || "").split("#")[0];
 const borrarFotos = urls => { const p = urls.map(rutaFoto).filter(Boolean); return p.length ? api("/storage/v1/object/fotos", { method: "DELETE", json: { prefixes: p } }).catch(() => {}) : Promise.resolve(); };
 
 // ---------- arranque / login ----------
@@ -50,7 +54,7 @@ function pintar() {
   const l = prods.filter(p => (!g || p.grupo === g) && (!q || `${p.nombre} ${p.marca} ${p.cat}`.toLowerCase().includes(q)));
   $("#cuenta").textContent = `${l.length} producto${l.length === 1 ? "" : "s"}`;
   $("#lista").innerHTML = l.length ? l.map(p => `<div class="it ${p.activo ? "" : "off"}" data-id="${p.id}">
-    ${p.imgs[0] ? `<img src="${esc(p.imgs[0])}" alt="">` : `<div class="ph0"></div>`}
+    ${p.imgs[0] ? `<img src="${esc(fotoSrc(p.imgs[0]))}" style="object-position:${fotoPos(p.imgs[0])}" alt="">` : `<div class="ph0"></div>`}
     <div><h3>${esc(p.nombre)}</h3><div class="m">${esc(p.grupo)} · ${esc(p.cat)}${p.marca ? " · " + esc(p.marca) : ""}${p.activo ? "" : " · <b>OCULTO</b>"}</div>
     <div class="pr">${cop(p.precio)}</div><div>${p.tallas.map(t => `<span class="tg ${p.agotadas.includes(t) ? "ag" : ""}">${esc(t)}${p.stock && p.stock[t] != null ? " · " + p.stock[t] : ""}</span>`).join("")}</div></div>
     <div class="acc"><button class="b" data-a="ed">Editar</button><button class="b" data-a="dup">Duplicar</button><button class="b del" data-a="del">Eliminar</button></div></div>`).join("")
@@ -71,7 +75,8 @@ $("#lista").onclick = async e => {
 // Unidades por talla: usa el stock guardado; si el producto es antiguo (sin stock), 1 unidad por talla disponible y 0 por agotada
 const stockInicial = p => { const st = p?.stock || {}, o = {}; (p?.tallas || []).forEach(t => { const n = Math.floor(+st[t]); o[t] = st[t] !== undefined && n >= 0 ? n : ((p.agotadas || []).includes(t) ? 0 : 1); }); return o; };
 function abrir(p) {
-  f = { id: p?.id || null, tallas: [...(p?.tallas || [])], agotadas: [...(p?.agotadas || [])], stock: stockInicial(p), imgs: [...(p?.imgs || [])], originales: p?.id ? [...p.imgs] : [], nuevas: [], subiendo: 0 };
+  f = { id: p?.id || null, tallas: [...(p?.tallas || [])], agotadas: [...(p?.agotadas || [])], stock: stockInicial(p), imgs: [...(p?.imgs || [])], originales: p?.id ? [...p.imgs] : [], nuevas: [], subiendo: 0, enc: null };
+  $("#enc").hidden = true;
   $("#mTit").textContent = p?.id ? "Editar producto" : "Nuevo producto";
   $("#pGrupo").value = p?.grupo || "hombre"; $("#pCat").value = p?.cat || ""; $("#pNombre").value = p?.nombre || ""; $("#pMarca").value = p?.marca || "";
   $("#pPrecio").value = p?.precio ?? ""; $("#pActivo").checked = p?.activo ?? true; $("#pErr").textContent = ""; $("#mGuardar").disabled = false;
@@ -129,13 +134,37 @@ async function subir(files) {
   }
 }
 function pintarFotos() {
-  $("#fotos").innerHTML = f.imgs.map((u, i) => `<div class="f ${u.startsWith("blob:") ? "sub" : ""}"><img src="${esc(u)}" alt="">${u.startsWith("blob:") ? "" : `<button type="button" class="q" data-q="${i}">×</button>${i ? `<button type="button" class="p" data-p="${i}">Hacer principal</button>` : `<span class="pri">Principal</span>`}`}</div>`).join("");
+  $("#fotos").innerHTML = f.imgs.map((u, i) => `<div class="f ${u.startsWith("blob:") ? "sub" : ""}${f.enc === i ? " enc" : ""}"><img src="${esc(fotoSrc(u))}" style="object-position:${fotoPos(u)}" alt="">${u.startsWith("blob:") ? "" : `<button type="button" class="q" data-q="${i}">×</button><button type="button" class="e" data-e="${i}">Encuadrar</button>${i ? `<button type="button" class="p" data-p="${i}">Hacer principal</button>` : `<span class="pri">Principal</span>`}`}</div>`).join("");
 }
 $("#fotos").onclick = e => {
+  if (e.target.dataset.e != null) { abrirEnc(+e.target.dataset.e); return; }
   if (e.target.dataset.q != null) f.imgs.splice(+e.target.dataset.q, 1);
   else if (e.target.dataset.p != null) f.imgs.unshift(f.imgs.splice(+e.target.dataset.p, 1)[0]);
-  else return; pintarFotos();
+  else return; cerrarEnc(); pintarFotos();
 };
+
+// ---------- encuadre de la foto (arrastrar dentro del cuadro; se guarda en el enlace como #p=x,y) ----------
+const encXY = u => { const m = String(u).match(/#p=(\d{1,3}),(\d{1,3})/); return m ? [Math.min(100, +m[1]), Math.min(100, +m[2])] : [50, 50]; };
+function abrirEnc(i) {
+  f.enc = i; const u = f.imgs[i], [x, y] = encXY(u); f.ex = x; f.ey = y; f.iw = f.ih = 0; f.edrag = null;
+  const im = new Image(), mi = i; im.onload = () => { if (f && f.enc === mi) { f.iw = im.naturalWidth; f.ih = im.naturalHeight; } }; im.src = fotoSrc(u);
+  $("#encF").style.backgroundImage = `url('${fotoSrc(u)}')`; pintarEnc(); $("#enc").hidden = false; pintarFotos();
+}
+function cerrarEnc() { if (f) f.enc = null; $("#enc").hidden = true; }
+function pintarEnc() { $("#encF").style.backgroundPosition = `${f.ex}% ${f.ey}%`; }
+function guardarEnc() { if (f.enc != null && f.imgs[f.enc]) f.imgs[f.enc] = fotoSrc(f.imgs[f.enc]) + `#p=${Math.round(f.ex)},${Math.round(f.ey)}`; }
+const encV = $("#encF");
+encV.onpointerdown = e => { if (!f || f.enc == null) return; encV.setPointerCapture(e.pointerId); f.edrag = { x: e.clientX, y: e.clientY, ex: f.ex, ey: f.ey }; };
+encV.onpointermove = e => {
+  const d = f && f.edrag; if (!d || !f.iw) return;
+  const r = encV.getBoundingClientRect(), k = Math.max(r.width / f.iw, r.height / f.ih), ow = f.iw * k - r.width, oh = f.ih * k - r.height, cl = n => Math.min(100, Math.max(0, n));
+  if (ow > 1) f.ex = cl(d.ex - (e.clientX - d.x) / ow * 100);
+  if (oh > 1) f.ey = cl(d.ey - (e.clientY - d.y) / oh * 100);
+  guardarEnc(); pintarEnc();
+  const t = document.querySelector(`#fotos .f.enc img`); if (t) t.style.objectPosition = `${f.ex}% ${f.ey}%`;
+};
+encV.onpointerup = encV.onpointercancel = () => { if (f) f.edrag = null; };
+$("#encOk").onclick = () => { guardarEnc(); cerrarEnc(); pintarFotos(); };
 $("#pFotos").onchange = e => { subir(e.target.files); e.target.value = ""; };
 const drop = $("#drop");
 ["dragover", "dragenter"].forEach(n => drop.addEventListener(n, e => { e.preventDefault(); drop.classList.add("over"); }));
@@ -158,7 +187,7 @@ $("#fProd").onsubmit = async e => {
   $("#mGuardar").disabled = true;
   try {
     if (f.id) await api(`/rest/v1/productos?id=eq.${f.id}`, { method: "PATCH", json: d }); else await api("/rest/v1/productos", { method: "POST", json: d });
-    await borrarFotos([...f.originales, ...f.nuevas].filter(u => !d.imgs.includes(u)));
+    await borrarFotos([...f.originales, ...f.nuevas].filter(u => !d.imgs.some(x => fotoSrc(x) === fotoSrc(u))));
     f.nuevas = []; await cargar(); cerrar(false); toast("Producto guardado");
   } catch (x) { $("#pErr").textContent = "No se pudo guardar: " + x.message; $("#mGuardar").disabled = false; }
 };

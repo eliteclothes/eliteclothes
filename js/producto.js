@@ -9,7 +9,7 @@ function verProducto(g, i) {
   const prom = rs.length ? rs.reduce((s, r) => s + r.estrellas, 0) / rs.length : 0;
   const est = n => "★".repeat(n) + "☆".repeat(5 - n);
   const otras = PRODUCTOS[g].map((x, j) => ({ x, j })).filter(o => o.j !== i).slice(0, 4);
-  $("#producto").innerHTML = `<div class="pd"><div class="gal">${im.map(s => `<img src="${s}" alt="${p.nombre}" title="Toca para ampliar">`).join("")}</div>
+  $("#producto").innerHTML = `<div class="pd"><div class="gal">${im.map(s => `<img src="${fotoSrc(s)}" style="object-position:${fotoPos(s)}" alt="${p.nombre}" title="Toca para ampliar">`).join("")}</div>
   <div class="inf"><div class="mig"><a href="#inicio">Inicio</a> / <a href="#${g}/${encodeURIComponent(p.cat)}">${p.cat}</a></div>
   <div class="pm">${p.marca}</div><h1 class="pt">${p.nombre}</h1><div class="pp">${cop2(p.precio)}</div>
   <div class="lb">Talla</div><div class="tl">${p.tallas.map(x => { const ag = p.agotadas.includes(x); return `<button class="${ag ? "ago" : x === selP.t ? "sel" : ""}" ${ag ? "disabled" : ""} data-t="${x}">${x}</button>`; }).join("")}</div>

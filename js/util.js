@@ -1,5 +1,9 @@
 /* UTILIDADES y estado general (no editar) */
 const $ = (s, r = document) => r.querySelector(s);
+// Encuadre de las fotos de productos: la posición se guarda al final del enlace, como "…foto.webp#p=50,20" (x,y en %).
+// Sin "#p=" la foto se centra. fotoSrc() devuelve el enlace limpio y fotoPos() la posición lista para CSS.
+const fotoSrc = s => String(s || "").split("#p=")[0];
+const fotoPos = s => { const m = String(s || "").match(/#p=(\d{1,3}),(\d{1,3})/); return m ? `${Math.min(100, +m[1])}% ${Math.min(100, +m[2])}%` : "center"; };
 const cop = n => "$" + Number(n).toLocaleString("es-CO");
 const muestra = (t, i) => "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><rect width='800' height='800' fill='${["#e6e6e6","#dcdcdc","#d2d2d2"][i % 3]}'/><text x='400' y='410' fill='#888' font-size='34' text-anchor='middle' font-family='sans-serif'>${t}</text></svg>`);

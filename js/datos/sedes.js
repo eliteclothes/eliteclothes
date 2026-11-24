@@ -12,8 +12,8 @@
    Cualquier botón o enlace de la página con la dirección "#sedes" abre esta ventana. */
 const SEDES = [
   {
-    nombre: "Sede Medellín . Santander",
-    direccion: "Medellín, Santander, Antioquia",           // EDITA AQUÍ: pon la dirección exacta (calle/carrera y barrio)
+    nombre: "Sede Medellín",
+    direccion: "Medellín, Antioquia",           // EDITA AQUÍ: pon la dirección exacta (calle/carrera y barrio)
     horario: "",                                  // EDITA AQUÍ: ej. "Lunes a sábado, 10:00 a. m. – 8:00 p. m."
     lat: 6.308515587324212,
     lng: -75.57670885753377,

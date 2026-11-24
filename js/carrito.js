@@ -19,7 +19,7 @@ function agregar(p, talla, i, g, silencioso) {
 function dibujar() {
   localStorage.setItem("carrito", JSON.stringify(carrito));
   $("#cuenta").textContent = carrito.reduce((a, c) => a + c.cant, 0);
-  $("#items").innerHTML = carrito.length ? carrito.map((c, i) => `<div class="fila"><img src="${c.img}" alt=""><div>${c.nombre}<br>Talla ${c.talla} · ${cop(c.precio)}</div><button class="ic" data-m="${i}">−</button>${c.cant}<button class="ic" data-p="${i}">+</button></div>`).join("") : "<p>Tu carrito está vacío.</p>";
+  $("#items").innerHTML = carrito.length ? carrito.map((c, i) => `<div class="fila"><img src="${fotoSrc(c.img)}" style="object-position:${fotoPos(c.img)}" alt=""><div>${c.nombre}<br>Talla ${c.talla} · ${cop(c.precio)}</div><button class="ic" data-m="${i}">−</button>${c.cant}<button class="ic" data-p="${i}">+</button></div>`).join("") : "<p>Tu carrito está vacío.</p>";
   const total = carrito.reduce((a, c) => a + c.precio * c.cant, 0), meta = TIENDA.envioGratis;
   $("#total").textContent = cop(total);
   $("#envnota").innerHTML = !meta || !carrito.length ? "" : total > meta ? "🎉 <b>¡Tu pedido tiene envío gratis!</b>" : `Envío gratis en compras superiores a <b>${cop(meta)}</b>`;

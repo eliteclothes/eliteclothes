@@ -2,7 +2,7 @@
 // ---------- Tarjeta de producto (home y "Otras opciones") ----------
 const cop2 = n => "$" + Number(n).toLocaleString("es-CO");
 function cardH(g, i, p, precio) {
-  return `<a href="#/p/${g}/${i}" class="card"><div class="im" style="background-image:url('${(p.imgs && p.imgs[0]) || p.img || muestra(p.nombre, i)}')"></div><div class="cat">${p.cat}</div><div class="nm">${p.nombre}</div><div class="pr">${cop2(p.precio)}</div><div class="sz">${p.tallas.map(x => `<span class="${p.agotadas.includes(x) ? "ago" : ""}">${x}</span>`).join("")}</div>${p.marca ? `<div class="mk">${p.marca}</div>` : ""}</a>`;
+  return `<a href="#/p/${g}/${i}" class="card"><div class="im" style="background-image:url('${fotoSrc((p.imgs && p.imgs[0]) || p.img || muestra(p.nombre, i))}');background-position:${fotoPos((p.imgs && p.imgs[0]) || p.img)}"></div><div class="cat">${p.cat}</div><div class="nm">${p.nombre}</div><div class="pr">${cop2(p.precio)}</div><div class="sz">${p.tallas.map(x => `<span class="${p.agotadas.includes(x) ? "ago" : ""}">${x}</span>`).join("")}</div>${p.marca ? `<div class="mk">${p.marca}</div>` : ""}</a>`;
 }
 
 // ---------- Navegación: inicio / categoría (#/c/grupo/categoría) / producto (#/p/grupo/número) ----------
