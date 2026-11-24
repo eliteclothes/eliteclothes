@@ -21,7 +21,7 @@ drop policy if exists "ver banners" on public.banners;
 drop policy if exists "admin gestiona banners" on public.banners;
 -- Todos ven los banners activos; solo tu correo ve los ocultos y puede crear, editar o borrar.
 create policy "ver banners" on public.banners for select
-  using (activo = true or (auth.jwt() ->> 'email') = 'eliteclothes827@gmail.com');
+  using (activo = true or (auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');
 create policy "admin gestiona banners" on public.banners for all to authenticated
-  using ((auth.jwt() ->> 'email') = 'eliteclothes827@gmail.com')
-  with check ((auth.jwt() ->> 'email') = 'eliteclothes827@gmail.com');
+  using ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com')
+  with check ((auth.jwt() ->> 'email') = 'TU_CORREO@dominio.com');

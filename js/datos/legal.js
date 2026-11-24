@@ -14,7 +14,7 @@ const LEGAL = {
   horario: "Lunes a Sábado, 11:00 a.m - 9:00 p.m. Domingos, 11:00 a.m - 8:00 p.m",
   mediosPago: "tarjetas, PSE y los demás medios que se muestren al momento de pagar",
   transportadoras: "INTERRAPIDÍSIMO",
-  costoEnvio: "entre $10.000 y $30.000 en Medellín y el Valle de Aburrá, según tu zona. Si eres de Medellín y tu sector no aparece en la lista, escribes tu dirección al comprar y te confirmamos el valor del domicilio. Fuera de la ciudad enviamos por Interrapidísimo y tus productos los pagas en la página y solo la guía del envío la pagas a Interrapidísimo cuando reclamas tu pedido",
+  costoEnvio: "entre $5.000 y $25.000 en Medellín y el Valle de Aburrá, según tu zona. Si eres de Medellín y tu sector no aparece en la lista, escribes tu dirección al comprar y te confirmamos el valor del domicilio. Fuera de la ciudad enviamos por Interrapidísimo y tus productos los pagas en la página y solo la guía del envío la pagas a Interrapidísimo cuando reclamas tu pedido",
   // ---- POLÍTICAS (valores sugeridos: ajústalos a lo que realmente haces) ----
   tiempoLocal: "el mismo día o al siguiente día hábil",
   tiempoNacional: "de 2 a 5 días hábiles",
