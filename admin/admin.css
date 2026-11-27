@@ -90,3 +90,7 @@ a.b{display:inline-block;text-decoration:none;color:var(--tinta)}a.b:hover{color
 .encf{width:100%;aspect-ratio:1/1;border-radius:10px;background:#fff center/cover no-repeat;border:1px solid var(--linea);cursor:grab;touch-action:none;user-select:none}.encf:active{cursor:grabbing}
 .enc .pie{margin-top:8px}
 .fotos{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}.f .e{padding:3px 8px}
+
+/* Descuentos */
+.pfinal{padding:10px 0;font-size:18px}.pfinal s{font-size:14px}
+.dsc{display:inline-block;padding:1px 8px;border-radius:99px;background:#b3261e;color:#fff;font-size:12px;font-weight:600}

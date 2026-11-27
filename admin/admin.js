@@ -55,8 +55,8 @@ function pintar() {
   $("#cuenta").textContent = `${l.length} producto${l.length === 1 ? "" : "s"}`;
   $("#lista").innerHTML = l.length ? l.map(p => `<div class="it ${p.activo ? "" : "off"}" data-id="${p.id}">
     ${p.imgs[0] ? `<img src="${esc(fotoSrc(p.imgs[0]))}" style="object-position:${fotoPos(p.imgs[0])}" alt="">` : `<div class="ph0"></div>`}
-    <div><h3>${esc(p.nombre)}</h3><div class="m">${esc(p.grupo)} · ${esc(p.cat)}${p.marca ? " · " + esc(p.marca) : ""}${p.activo ? "" : " · <b>OCULTO</b>"}</div>
-    <div class="pr">${cop(p.precio)}</div><div>${p.tallas.map(t => `<span class="tg ${p.agotadas.includes(t) ? "ag" : ""}">${esc(t)}${p.stock && p.stock[t] != null ? " · " + p.stock[t] : ""}</span>`).join("")}</div></div>
+    <div><h3>${esc(p.nombre)}</h3><div class="m">${esc(p.grupo)} · ${esc(canonCat(p.grupo, p.cat))}${p.marca ? " · " + esc(p.marca) : ""}${p.activo ? "" : " · <b>OCULTO</b>"}</div>
+    <div class="pr">${Number(p.precio_antes) > p.precio ? `<s class="mut">${cop(p.precio_antes)}</s> ` : ""}${cop(p.precio)}${Number(p.precio_antes) > p.precio ? ` <span class="dsc">−${Math.round((1 - p.precio / p.precio_antes) * 100)}%</span>` : ""}</div><div>${p.tallas.map(t => `<span class="tg ${p.agotadas.includes(t) ? "ag" : ""}">${esc(t)}${p.stock && p.stock[t] != null ? " · " + p.stock[t] : ""}</span>`).join("")}</div></div>
     <div class="acc"><button class="b" data-a="ed">Editar</button><button class="b" data-a="dup">Duplicar</button><button class="b del" data-a="del">Eliminar</button></div></div>`).join("")
     : `<p class="mut">${prods.length ? "No hay resultados." : "Aún no tienes productos. Toca “+ Nuevo producto”."}</p>`;
 }
@@ -78,20 +78,31 @@ function abrir(p) {
   f = { id: p?.id || null, tallas: [...(p?.tallas || [])], agotadas: [...(p?.agotadas || [])], stock: stockInicial(p), imgs: [...(p?.imgs || [])], originales: p?.id ? [...p.imgs] : [], nuevas: [], subiendo: 0, enc: null };
   $("#enc").hidden = true;
   $("#mTit").textContent = p?.id ? "Editar producto" : "Nuevo producto";
-  $("#pGrupo").value = p?.grupo || "hombre"; $("#pCat").value = p?.cat || ""; $("#pNombre").value = p?.nombre || ""; $("#pMarca").value = p?.marca || "";
-  $("#pPrecio").value = p?.precio ?? ""; $("#pActivo").checked = p?.activo ?? true; $("#pErr").textContent = ""; $("#mGuardar").disabled = false;
+  $("#pGrupo").value = p?.grupo || "hombre"; $("#pCat").value = p ? canonCat(p.grupo, p.cat) : ""; $("#pNombre").value = p?.nombre || ""; $("#pMarca").value = p?.marca || "";
+  const antes = Number(p?.precio_antes) || 0, conDesc = antes > (p?.precio || 0);
+  f.colDesc = !!p && "precio_antes" in p;       // la columna existe en la base (se ejecutó sql/descuentos.sql)
+  $("#pPrecio").value = p ? (conDesc ? antes : p.precio) : ""; $("#pDesc").value = conDesc ? Math.round((1 - p.precio / antes) * 100) : ""; $("#pActivo").checked = p?.activo ?? true; $("#pErr").textContent = ""; $("#mGuardar").disabled = false;
   $("#pTipoT").value = tipoTallaDeCat(p?.cat);
   catList(); precioF(); pintarTallas(); pintarFotos(); $("#modal").hidden = false; $("#pNombre").focus();
 }
 function catList() {
-  const g = $("#pGrupo").value, c = new Set([...(SECCIONES[g]?.cats || []), ...prods.filter(p => p.grupo === g).map(p => p.cat)]);
+  const g = $("#pGrupo").value, c = new Set([...(SECCIONES[g]?.cats || []), ...prods.filter(p => p.grupo === g).map(p => canonCat(g, p.cat))]);
   $("#dCat").innerHTML = [...c].map(x => `<option value="${esc(x)}">`).join("");
 }
 $("#pGrupo").onchange = catList;
 $("#pCat").oninput = () => { const t = tipoTallaDeCat($("#pCat").value); if (t !== $("#pTipoT").value) { $("#pTipoT").value = t; pintarTallas(); } };   // Gorras -> tallas de gorra, Calzado/Tenis -> tallas europeas
 $("#pTipoT").onchange = pintarTallas;
-const precioF = () => $("#pPrecioF").textContent = $("#pPrecio").value ? cop($("#pPrecio").value) + " COP" : "";
-$("#pPrecio").oninput = precioF;
+// Descuento: se escribe el precio normal y el %; se guarda "precio" (lo que se cobra) y "precio_antes" (el normal, tachado en la tienda)
+function calcPrecio() {
+  const normal = Math.max(0, Math.round(+$("#pPrecio").value || 0)), pct = Math.min(90, Math.max(0, Math.round(+$("#pDesc").value || 0)));
+  const final = pct ? Math.max(100, Math.round(normal * (100 - pct) / 100 / 100) * 100) : normal;
+  return final < normal ? { normal, pct, final } : { normal, pct: 0, final: normal };
+}
+const precioF = () => {
+  $("#pPrecioF").textContent = $("#pPrecio").value ? cop($("#pPrecio").value) + " COP" : "";
+  const c = calcPrecio(); $("#pFinal").innerHTML = !c.normal ? "—" : c.pct ? `<b>${cop(c.final)}</b> <s class="mut">${cop(c.normal)}</s> <span class="mut">(−${c.pct}%)</span>` : `<b>${cop(c.final)}</b> <span class="mut">sin descuento</span>`;
+};
+$("#pPrecio").oninput = precioF; $("#pDesc").oninput = precioF;
 function pintarTallas() {
   const tipo = TIPOS_TALLA[$("#pTipoT").value] || TIPOS_TALLA.ropa;
   $("#tAyuda").textContent = tipo.ayuda; $("#pTallaX").placeholder = "Otra talla" + (tipo.ejemplo ? ` (ej: ${tipo.ejemplo})` : " (ej: Única)");
@@ -182,14 +193,15 @@ $("#fProd").onsubmit = async e => {
   if (f.subiendo) return $("#pErr").textContent = "Espera a que terminen de subir las fotos.";
   if (!f.tallas.length && !confirm("No elegiste ninguna talla. ¿Guardar así?")) return;
   const stock = Object.fromEntries(f.tallas.map(t => [t, Math.max(0, Math.floor(+f.stock[t] || 0))]));
-  const d = { grupo: $("#pGrupo").value, nombre: $("#pNombre").value.trim(), marca: $("#pMarca").value.trim(), cat: canonCat($("#pGrupo").value, $("#pCat").value), precio: Math.max(0, Math.round(+$("#pPrecio").value || 0)),
+  const d = { grupo: $("#pGrupo").value, nombre: $("#pNombre").value.trim(), marca: $("#pMarca").value.trim(), cat: canonCat($("#pGrupo").value, $("#pCat").value), precio: calcPrecio().final,
     imgs: f.imgs, tallas: f.tallas, agotadas: f.tallas.filter(t => stock[t] === 0), stock, activo: $("#pActivo").checked };
+  const cp = calcPrecio(); if (cp.pct || f.colDesc) d.precio_antes = cp.pct ? cp.normal : 0;   // solo se envía si hay descuento o la columna ya existe
   $("#mGuardar").disabled = true;
   try {
     if (f.id) await api(`/rest/v1/productos?id=eq.${f.id}`, { method: "PATCH", json: d }); else await api("/rest/v1/productos", { method: "POST", json: d });
     await borrarFotos([...f.originales, ...f.nuevas].filter(u => !d.imgs.some(x => fotoSrc(x) === fotoSrc(u))));
     f.nuevas = []; await cargar(); cerrar(false); toast("Producto guardado");
-  } catch (x) { $("#pErr").textContent = "No se pudo guardar: " + x.message; $("#mGuardar").disabled = false; }
+  } catch (x) { $("#pErr").textContent = "No se pudo guardar: " + x.message + (/precio_antes/.test(x.message) ? " — Falta ejecutar sql/descuentos.sql en Supabase (SQL Editor)." : ""); $("#mGuardar").disabled = false; }
 };
 $("#bNuevo").onclick = () => abrir(null);
 iniciar();

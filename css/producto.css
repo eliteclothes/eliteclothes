@@ -58,3 +58,5 @@
 .visor.zoom .vh{display:none}
 @media(max-width:600px){.vf{width:40px;height:40px;font-size:28px}.vp{left:8px}.vs{right:8px}}
 @media(prefers-reduced-motion:reduce){.visor{animation:none}}
+
+.dtp{display:inline-block;vertical-align:middle;margin-left:6px;padding:3px 11px;border-radius:99px;background:#b3261e;color:#fff;font:600 13px/1.4 system-ui,sans-serif;letter-spacing:.5px}

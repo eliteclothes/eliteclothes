@@ -26,6 +26,17 @@ const TIPOS_TALLA = {
       { t: "Ajustable", l: ["Única"] }
     ]
   },
+  pantalon: {
+    nombre: "Jeans y mochos (cintura)",
+    ayuda: "Tallas de cintura (28 a 40) o de letras. Si necesitas otra, escríbela en “Otra talla”.",
+    ejemplo: "32",
+    grupos: [{ t: "Cintura", l: Array.from({ length: 13 }, (_, i) => String(28 + i)) }, { t: "Letras", l: ["XS", "S", "M", "L", "XL", "XXL"] }]
+  },
+  unica: {
+    nombre: "Talla única (relojes, bolsos)",
+    ayuda: "Para productos sin talla. Pon cuántas unidades tienes en “Única”.",
+    grupos: [{ l: ["Única"] }]
+  },
   calzado: {
     nombre: "Calzado (tallas europeas)",
     ayuda: "Tallas europeas (EU). Para media talla escríbela en “Otra talla” (ej: 42.5).",
@@ -39,6 +50,8 @@ function tipoTallaDeCat(cat) {
   const c = String(cat || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   if (/gorr|cachucha|cap\b/.test(c)) return "gorras";
   if (/calzado|tenis|zapat|sneaker|bota|sandalia|chancla/.test(c)) return "calzado";
+  if (/reloj|bolso|mochila|cartera|maletin|rinonera|billetera|cinturon|gafas|lentes/.test(c)) return "unica";
+  if (/jean|mocho|pantalon|short|bermuda|jogger|cargo/.test(c)) return "pantalon";
   return "ropa";
 }
 

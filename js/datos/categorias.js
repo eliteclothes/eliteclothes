@@ -12,6 +12,8 @@ function mismaCat(a, b) {
 // Devuelve el nombre "oficial" de la categoría (el de SECCIONES.cats en menu.js) si coincide; si no, el texto limpio.
 function canonCat(g, cat) {
   const c = String(cat || "").trim().replace(/\s+/g, " ");
+  const alias = typeof CAT_ALIAS !== "undefined" && Object.entries(CAT_ALIAS).find(([k]) => mismaCat(k, c));
+  if (alias) return alias[1];
   const lista = (typeof SECCIONES !== "undefined" && SECCIONES[g] && SECCIONES[g].cats) || [];
   return lista.find(x => mismaCat(x, c)) || c;
 }

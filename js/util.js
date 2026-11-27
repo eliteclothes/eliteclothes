@@ -4,6 +4,11 @@ const $ = (s, r = document) => r.querySelector(s);
 // Sin "#p=" la foto se centra. fotoSrc() devuelve el enlace limpio y fotoPos() la posición lista para CSS.
 const fotoSrc = s => String(s || "").split("#p=")[0];
 const fotoPos = s => { const m = String(s || "").match(/#p=(\d{1,3}),(\d{1,3})/); return m ? `${Math.min(100, +m[1])}% ${Math.min(100, +m[2])}%` : "center"; };
+// Descuentos: "precio" es lo que se cobra y "antes" es el precio normal (tachado). Se ponen desde el panel de admin.
+const hayDesc = p => Number(p.antes) > Number(p.precio);
+const pctDesc = p => Math.round((1 - p.precio / p.antes) * 100);
+const precioH = p => hayDesc(p) ? `<s class="antes">${cop2(p.antes)}</s> ${cop2(p.precio)}` : cop2(p.precio);
+const dtoH = p => hayDesc(p) ? `<span class="dto">-${pctDesc(p)}%</span>` : "";
 const cop = n => "$" + Number(n).toLocaleString("es-CO");
 const muestra = (t, i) => "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><rect width='800' height='800' fill='${["#e6e6e6","#dcdcdc","#d2d2d2"][i % 3]}'/><text x='400' y='410' fill='#888' font-size='34' text-anchor='middle' font-family='sans-serif'>${t}</text></svg>`);

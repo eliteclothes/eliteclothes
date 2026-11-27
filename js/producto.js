@@ -11,7 +11,7 @@ function verProducto(g, i) {
   const otras = PRODUCTOS[g].map((x, j) => ({ x, j })).filter(o => o.j !== i).slice(0, 4);
   $("#producto").innerHTML = `<div class="pd"><div class="gal">${im.map(s => `<img src="${fotoSrc(s)}" style="object-position:${fotoPos(s)}" alt="${p.nombre}" title="Toca para ampliar">`).join("")}</div>
   <div class="inf"><div class="mig"><a href="#inicio">Inicio</a> / <a href="#${g}/${encodeURIComponent(p.cat)}">${p.cat}</a></div>
-  <div class="pm">${p.marca}</div><h1 class="pt">${p.nombre}</h1><div class="pp">${cop2(p.precio)}</div>
+  <div class="pm">${p.marca}</div><h1 class="pt">${p.nombre}</h1><div class="pp">${precioH(p)}${hayDesc(p) ? ` <span class="dtp">-${pctDesc(p)}%</span>` : ""}</div>
   <div class="lb">Talla</div><div class="tl">${p.tallas.map(x => { const ag = p.agotadas.includes(x); return `<button class="${ag ? "ago" : x === selP.t ? "sel" : ""}" ${ag ? "disabled" : ""} data-t="${x}">${x}</button>`; }).join("")}</div>
   <div class="caja"><div>● ${selP.t ? "Disponible ahora" : "Agotado"}</div>${TIENDA.envioGratis ? `<div class="env">Envío gratis por compras superiores a ${cop(TIENDA.envioGratis)}</div>` : ""}</div>
   <button class="bt" id="add" ${selP.t ? "" : "disabled"}>Agregar al carrito</button><button class="bt n" id="ya" ${selP.t ? "" : "disabled"}>Comprar ahora</button>

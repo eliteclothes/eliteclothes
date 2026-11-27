@@ -64,10 +64,14 @@
     <label>Nombre<input id="pNombre" required maxlength="80" placeholder="Ej: CAMISETA BÁSICA"></label>
     <div class="grid2">
       <label>Marca<input id="pMarca" maxlength="40" placeholder="Opcional"></label>
-      <label>Precio (COP)<input id="pPrecio" type="number" min="0" step="1000" required placeholder="80000"><small id="pPrecioF" class="mut"></small></label>
+      <label>Precio normal (COP)<input id="pPrecio" type="number" min="0" step="1" required placeholder="80000"><small id="pPrecioF" class="mut"></small></label>
+    </div>
+    <div class="grid2">
+      <label>Descuento % <span class="mut">(vacío = sin descuento)</span><input id="pDesc" type="number" min="0" max="90" step="1" placeholder="Ej: 20"></label>
+      <div class="campo"><span class="et">Precio que paga el cliente</span><div id="pFinal" class="pfinal">—</div></div>
     </div>
     <div class="campo"><span class="et">Tallas</span>
-      <label>Tipo de talla<select id="pTipoT"><option value="ropa">Ropa</option><option value="gorras">Gorras</option><option value="calzado">Calzado (tallas europeas)</option></select></label>
+      <label>Tipo de talla<select id="pTipoT"><option value="ropa">Ropa</option><option value="gorras">Gorras</option><option value="calzado">Calzado (tallas europeas)</option><option value="pantalon">Jeans y mochos (cintura)</option><option value="unica">Talla única (relojes, bolsos)</option></select></label>
       <small id="tAyuda" class="mut"></small>
       <div id="presets"></div>
       <div class="add"><input id="pTallaX" placeholder="Otra talla" maxlength="8"><button type="button" class="b" id="bTalla">Agregar</button></div>
